@@ -342,6 +342,9 @@ try {
   await page.locator('#login-form button').click();
   await page.locator('#mps-loader').waitFor({state:'hidden'});
   await page.locator('[data-task="0"]').waitFor();
+  assert.ok(await page.locator('#home-import').isVisible());
+  assert.ok((await page.locator('#content h2').textContent()).includes('Progress & Analisis'));
+  await page.screenshot({path:path.resolve(root,'../tests/artifacts/admin-home.png'),fullPage:true});
   await page.locator('#mps-loader').waitFor({state:'hidden'});
   await page.locator('[data-task="0"]').click();
   await page.locator('#mps-loader').waitFor({state:'hidden'});
@@ -471,6 +474,9 @@ try {
   console.log(
     'PASS browser: login, provisional grade, keyboard, search, interrupted save recovery, submission lock, remarks, class finalization, analytics, admin, responsive layout; isolated fixtures.'
   );
+} catch(error) {
+  console.error('Browser fixture failure:', await page.evaluate(()=>({status:document.querySelector('#save-status')?.textContent,notice:document.querySelector('#notification')?.textContent,conflict:document.querySelector('#conflict')?.textContent,pending:[...window.MPS.pending],inflight:window.MPS.inflight,recent:window.__envelopes?.slice(-4)})));
+  throw error;
 } finally {
   await browser.close();
 }

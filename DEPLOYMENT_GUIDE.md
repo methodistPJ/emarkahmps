@@ -1,3 +1,5 @@
+> Installation record, 22 October 2026: existing web deployment updated to version 3. See GITHUB_DEPLOYMENT.md for verified scope and limitations. The checklist below was prepared before installation and does not assert completed staging acceptance.
+
 # Controlled v1.0.3 upgrade
 
 No production action was executed. Existing Apps Script project, database and deployment URL must remain. No installer, templateInstall_, database reset, secret rotation or new production deployment is required.

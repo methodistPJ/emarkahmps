@@ -6,7 +6,7 @@
   "baseline_checksums_file_sha256": "26a2ddb04c6eaed7a7827c80df62da818a6057023786f49593b4425bb2afb9cb",
   "schema_changed": false,
   "metadata_migration": "additive authentication_data and _STATE only; no installer",
-  "production_deployed": false,
+  "production_deployed": true,
   "production_data_modified": false,
   "deployment_url_changed": false,
   "existing_verifier_format_changed": false,
@@ -14,5 +14,9 @@
     "version": "3.10.1",
     "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e"
   },
-  "rollback_warning": "Suspend all pending accounts before reverting to v1.0.2 auth."
+  "rollback_warning": "Suspend all pending accounts before reverting to v1.0.2 auth.",
+  "production_deployment_date": "2026-10-22",
+  "apps_script_version": 3,
+  "previous_apps_script_version": 2,
+  "live_verification": "public landing page and activation form only; no authenticated end-to-end acceptance"
 }

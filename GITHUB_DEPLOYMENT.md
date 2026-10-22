@@ -12,4 +12,8 @@ python3 tools/build.py diikuti npm test. Semakan CI menggunakan data sintetik da
 
 ## Status
 
-Kod asal telah ditarik sebagai sandaran tempatan. Deployment asal ialah versi 2. Status deployment baharu akan direkodkan selepas operasi berjaya.
+Pada 22 Oktober 2026, deployment Web App sedia ada berjaya dikemas kini daripada versi 2 kepada versi 3 (v1.0.3-rc.1). URL dikekalkan. Kesemua 20 fail dimuat naik tanpa installer, import, reset pangkalan data atau perubahan Script Properties.
+
+Halaman Web App langsung dan borang pengaktifan guru berjaya dibuka selepas deployment. Log masuk pentadbir, simpan markah, import, PDF dan worker belum diuji secara langsung; ujian tersebut dalam TEST_REPORT ialah ujian tempatan/sintetik. Tiada ujian staging Google penuh dilakukan semasa pemasangan ini. Pelayar semasa tidak mempunyai akses editor kepada URL /dev; akses clasp kepada projek dan deployment berjaya.
+
+Sandaran tempatan meliputi kod HEAD asal dan rekod deployment versi 2. Ia bukan sandaran data Sheets atau Script Properties. Nama dummy tersedia dalam templat Excel, belum diimport ke Sheets. Sebelum penggunaan data sebenar, jalankan semakan pentadbir dan aliran operasi yang diperlukan.

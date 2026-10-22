@@ -1,4 +1,6 @@
-# MPS e-Assessment v1.0.3 Release Candidate 1
+# MPS e-Assessment v1.0.3 — paparan tugasan dipermudah
+
+**Pentadbir: mula dengan [Apa Perlu Buat](APA_PERLU_BUAT.md).** Isi semua nama dalam satu templat dan import secara pukal. Guru terus melihat tugasan sendiri; halaman pentadbir menunjukkan progress dan pintasan analisis.
 
 One-upload school setup and secure teacher onboarding, implemented as a selective upgrade of this workspace's latest v1.0.2 Release Candidate. Pakej kod untuk repositori methodistPJ/emarkahmps. GitHub menyimpan kod dan menjalankan ujian; Web App dihoskan oleh Google Apps Script. Rujuk GITHUB_DEPLOYMENT.md untuk status pemasangan semasa.
 

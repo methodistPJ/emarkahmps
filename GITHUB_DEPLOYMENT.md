@@ -17,3 +17,7 @@ Pada 22 Oktober 2026, deployment Web App sedia ada berjaya dikemas kini daripada
 Halaman Web App langsung dan borang pengaktifan guru berjaya dibuka selepas deployment. Log masuk pentadbir, simpan markah, import, PDF dan worker belum diuji secara langsung; ujian tersebut dalam TEST_REPORT ialah ujian tempatan/sintetik. Tiada ujian staging Google penuh dilakukan semasa pemasangan ini. Pelayar semasa tidak mempunyai akses editor kepada URL /dev; akses clasp kepada projek dan deployment berjaya.
 
 Sandaran tempatan meliputi kod HEAD asal dan rekod deployment versi 2. Ia bukan sandaran data Sheets atau Script Properties. Nama dummy tersedia dalam templat Excel, belum diimport ke Sheets. Sebelum penggunaan data sebenar, jalankan semakan pentadbir dan aliran operasi yang diperlukan.
+
+## Paparan dipermudah — versi 4
+
+Deployment yang sama dikemas kini kepada versi 4 pada 22 Oktober 2026. Halaman awam baharu disahkan pada URL langsung. Paparan guru dan pentadbir, import dan kawalan akses pautan pangkalan data diuji dengan data rekaan, bukan akaun guru sebenar. Semua nama masih perlu diisi melalui templat dan diimport. Tiada Sheet baharu diwujudkan atau data sebenar diimport semasa kemas kini paparan. Lihat APA_PERLU_BUAT.md.

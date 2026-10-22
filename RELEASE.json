@@ -16,7 +16,8 @@
   },
   "rollback_warning": "Suspend all pending accounts before reverting to v1.0.2 auth.",
   "production_deployment_date": "2026-10-22",
-  "apps_script_version": 3,
-  "previous_apps_script_version": 2,
-  "live_verification": "public landing page and activation form only; no authenticated end-to-end acceptance"
+  "apps_script_version": 4,
+  "previous_apps_script_version": 3,
+  "live_verification": "updated public login page; authenticated teacher/admin flows verified with synthetic browser fixtures",
+  "ui_revision": "task-first-home"
 }

@@ -1,3 +1,11 @@
+## 2026-10-22 — Task-first workspace
+
+- Replace the long landing page with a concise login and school workflow.
+- Teachers see class/subject cards and direct marks/review actions; administrators see completeness counts, class progress, analysis and bulk import shortcuts.
+- Expose the existing database URL through an administrator-only read action, without exposing Script Properties or secrets.
+- Add APA_PERLU_BUAT.md: one-workbook bulk setup, including the explicit Sheets-to-XLSX import step. No automatic synchronization, registration bypass or changes to account security.
+- Core regression suites and both Chromium browser suites passed with synthetic data. No real names or account credentials were imported.
+
 # v1.0.3-rc.1 — 21 October 2026
 
 Baseline: latest v1.0.2 Release Candidate in this workspace; preserved separately. Selective extension, not a rebuild.

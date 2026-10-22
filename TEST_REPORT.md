@@ -1,3 +1,7 @@
+## Task-first home verification — 22 October 2026
+
+Core runner passed:22 backend,10 reliability, PDF,5/10/20 synthetic clients,20 school/onboarding (including admin-only database link) and2000-student recovery scenario. Both Chromium browser suites passed with admin-home and teacher-home assertions. The general browser suite had one intermittent conflict-control timeout; it passed after adding failure diagnostics and again with the new home assertions. Real authenticated Google integration remains untested. Live deployment version4 public login page verified. See tests/artifacts/admin-home.png, teacher-home.png and task-home-core-results.txt; these are synthetic fixtures.
+
 # QA report — v1.0.3-rc.1,21 October2026
 
 All tests use fictional school data and isolated Google-service doubles. No production Google integration, actual Microsoft Excel editing, Safari device or school PIN was used. The application source is the current workspace v1.0.2 RC plus targeted additions; that baseline remains separately preserved.

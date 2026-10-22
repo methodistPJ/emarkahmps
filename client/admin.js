@@ -54,7 +54,7 @@
       ['revoke', 'Batalkan sesi terdahulu', 'checkbox']
     ]
   };
-  M.openAdmin = async () => {
+  M.openAdmin = async (start = '') => {
     await M.guard();
     if (!M.user.roles.includes('ADMINISTRATOR')) throw new Error('Akses pentadbir diperlukan.');
     const d=await M.call('adminData');let dash={tasks:[]},jobs=[];
@@ -267,5 +267,7 @@
         });
       };
     });
+    if (start === 'import') await document.querySelector('#import-tab').onclick();
+    if (start === 'operations') await document.querySelector('#operations-tab').onclick();
   };
 })(window.MPS);

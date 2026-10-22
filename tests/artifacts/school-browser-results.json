@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "parserCases": [
+    {
+      "name": "missing worksheet",
+      "accepted": false,
+      "message": "Worksheet wajib tidak lengkap."
+    },
+    {
+      "name": "formula",
+      "accepted": false,
+      "message": "Betulkan ralat workbook sebelum validasi."
+    },
+    {
+      "name": "external relationship",
+      "accepted": false,
+      "message": "Pautan luar tidak dibenarkan. Buang hyperlink/external link sebelum import."
+    },
+    {
+      "name": "doctype",
+      "accepted": false,
+      "message": "DOCTYPE/entity XML tidak dibenarkan."
+    }
+  ],
+  "calls": [
+    "public",
+    "challenge",
+    "login",
+    "dashboard",
+    "adminData",
+    "schoolReadiness",
+    "schoolPreview",
+    "schoolPreviewDetails",
+    "schoolCommit",
+    "schoolCommit",
+    "adminData",
+    "schoolReadiness",
+    "issueActivation",
+    "logout",
+    "challenge",
+    "activationBegin",
+    "activationFinish",
+    "login",
+    "dashboard"
+  ],
+  "environment": "Actual candidate RPC/backend with isolated synthetic Google-service doubles; Chromium desktop/iPad/phone sizes, no live Google"
+}

@@ -1,0 +1,11 @@
+PASS A: ten pending changes survive draft serialization before autosave
+PASS B: disconnected save retains in-flight request and pending draft
+PASS C/J: committed response lost, retry reuses ID and applies exactly once
+PASS D: edits typed during previous batch keep new value and receive new version
+PASS E: navigation guard waits for pending marks and remarks
+PASS F: session-expired save preserves payload for same-user reauthentication
+PASS G/H: independent tabs/users with stale versions cannot silently overwrite
+PASS I: in-flight draft reconstructs after tab runtime loss using same request ID
+PASS Transport watchdog preserves default mutation ID and ignores late callback
+PASS Invalid raw values and corrupt drafts are retained; cross-subject finalization blocked
+10/10 synthetic frontend reliability tests passed. SessionStorage restoration represents reload/runtime loss; not browser crash durability.

@@ -1,0 +1,4 @@
+PASS 5 simulated clients: disjoint writes + receipt retries; shared-record race accepts one and rejects 4.
+PASS 10 simulated clients: disjoint writes + receipt retries; shared-record race accepts one and rejects 9.
+PASS 20 simulated clients: disjoint writes + receipt retries; shared-record race accepts one and rejects 19.
+Synthetic Promise.all dispatch; synchronous mocked lock execution. No real Google lock wait or distributed concurrency measured.

@@ -1,0 +1,2 @@
+PASS baseline/candidate: all140 task statistics, class/subject mappings, submissions and metadata are identical in the267-pupil synthetic fixture.
+SHA-256 4ef5d4c025eb91eaf65a102b72f1a685e7c6af11dde7b172f6b99b8e3e711f14

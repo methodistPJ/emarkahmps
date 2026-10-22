@@ -1,0 +1,63 @@
+PASS source syntax, client bundle, public RPC boundary, vendor checksum and manifest.
+PASS exact workbook/parser/backend contract and downloadable workbook bytes.
+PASS Grade boundaries 0–100 and invalid inputs
+PASS Prepare exam has correct Tahap coverage and default TB
+PASS Teacher RBAC and stale version rejected
+PASS Batch rejects all changes when any conflict exists
+PASS A teacher with both roles can use ordinary entry for an assigned subject
+PASS Submission requires completeness and default TB acknowledgement
+PASS Class teacher amendment preserves teacher submission revision
+PASS Finalization blocks missing remarks/submissions, then freezes whole class
+PASS Official analytics uses frozen data; percentages count A–F
+PASS Reopen requires admin, invalidates PDF and official analytics
+PASS Request idempotency binds payload and actor
+PASS Prepared write-ahead journal replays after interrupted write
+PASS Authentication hashes PIN verifier, collision handling, cooldown, revocation
+PASS Expired sessions and unauthenticated RPC fail closed
+PASS 025849 account creation, real PBKDF2 login, alias and deactivation preserve six digits
+PASS RPC prototype actions and public installer are unavailable
+PASS Readiness rejects a missing student-subject cell even without EMPTY records
+PASS Each WAL flush interruption recovers safely without duplicate state rows
+PASS Admin health, prepared exam state and grade-row payload boundaries
+PASS Corrupt PREPARED piece fails closed until the original journal is restored
+PASS Archive rejects incomplete exams and next year before archive
+PASS Archive copy verifies hashes and next year preserves IDs without promoting
+22/22 tests passed (isolated Google-service mocks; not live integration).
+PASS A: ten pending changes survive draft serialization before autosave
+PASS B: disconnected save retains in-flight request and pending draft
+PASS C/J: committed response lost, retry reuses ID and applies exactly once
+PASS D: edits typed during previous batch keep new value and receive new version
+PASS E: navigation guard waits for pending marks and remarks
+PASS F: session-expired save preserves payload for same-user reauthentication
+PASS G/H: independent tabs/users with stale versions cannot silently overwrite
+PASS I: in-flight draft reconstructs after tab runtime loss using same request ID
+PASS Transport watchdog preserves default mutation ID and ignores late callback
+PASS Invalid raw values and corrupt drafts are retained; cross-subject finalization blocked
+10/10 synthetic frontend reliability tests passed. SessionStorage restoration represents reload/runtime loss; not browser crash durability.
+PASS PDF layout contract + parser: zero/F, TH, TB omission, name/remark bounds, EMPTY rejection, compressed-object page count, A4, wrong count/paper, corrupt file. No live Docs/Drive export was run.
+PASS 5 simulated clients: disjoint writes + receipt retries; shared-record race accepts one and rejects 4.
+PASS 10 simulated clients: disjoint writes + receipt retries; shared-record race accepts one and rejects 9.
+PASS 20 simulated clients: disjoint writes + receipt retries; shared-record race accepts one and rejects 19.
+Synthetic Promise.all dispatch; synchronous mocked lock execution. No real Google lock wait or distributed concurrency measured.
+PASS Valid workbook preview is read-only for school records; complete cross-sheet plan
+PASS Missing sheet/header, numeric identity and duplicate references rejected
+PASS Preview ownership/expiry, confirmation and changed-database guards reject safely
+PASS One commit provisions classes, students/enrolments, pending teachers, assignments and two DRAFT exams
+PASS Native Sheets Date/UTC representations re-import without enrolment-history changes
+PASS Exact re-import skips stable records; established authentication remains unchanged
+PASS Safe name correction updates matching student; missing workbook rows do not delete records
+PASS Changes to enrolment history and existing teacher assignment rejected
+PASS Pending account cannot create normal session or use forged pre-existing workspace session
+PASS Admin-only single-use code issuance stores no plaintext code in Sheets or WAL
+PASS Invalid code and expired activation rejected and failures audited
+PASS Private code+temporary proof yields restricted capability, not workspace session
+PASS Expired limited capability cannot set permanent PIN
+PASS Permanent PIN policy and activation generation enforced; reissue revokes old tickets
+PASS Permanent activation consumes code/ticket, revokes related sessions and enables ordinary login
+PASS Optional subject defaults, complete readiness and explicit prepare preserve frozen cohort
+PASS Repeated invalid activation attempts trigger cooldown without issuing session
+PASS Leading-zero request/actor IDs retain idempotent journal receipt matching
+PASS Archive freeze blocks onboarding writes; rollback suspension preserves activated accounts
+19 school/onboarding tests passed; isolated Sheets/Google service doubles, not live Google integration.
+PASS large import:2000 text-ID students,60 classes,20 teachers; PREPARED failure/recovery, same-ID replay, no duplicate records. 1119ms local.
+Core suites passed. Browser and optional Python legacy helper tests are separate.

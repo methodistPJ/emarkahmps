@@ -1,0 +1,23 @@
+PASS Grade boundaries 0–100 and invalid inputs
+PASS Prepare exam has correct Tahap coverage and default TB
+PASS Teacher RBAC and stale version rejected
+PASS Batch rejects all changes when any conflict exists
+PASS A teacher with both roles can use ordinary entry for an assigned subject
+PASS Submission requires completeness and default TB acknowledgement
+PASS Class teacher amendment preserves teacher submission revision
+PASS Finalization blocks missing remarks/submissions, then freezes whole class
+PASS Official analytics uses frozen data; percentages count A–F
+PASS Reopen requires admin, invalidates PDF and official analytics
+PASS Request idempotency binds payload and actor
+PASS Prepared write-ahead journal replays after interrupted write
+PASS Authentication hashes PIN verifier, collision handling, cooldown, revocation
+PASS Expired sessions and unauthenticated RPC fail closed
+PASS 025849 account creation, real PBKDF2 login, alias and deactivation preserve six digits
+PASS RPC prototype actions and public installer are unavailable
+PASS Readiness rejects a missing student-subject cell even without EMPTY records
+PASS Each WAL flush interruption recovers safely without duplicate state rows
+PASS Admin health, prepared exam state and grade-row payload boundaries
+PASS Corrupt PREPARED piece fails closed until the original journal is restored
+PASS Archive rejects incomplete exams and next year before archive
+PASS Archive copy verifies hashes and next year preserves IDs without promoting
+22/22 tests passed (isolated Google-service mocks; not live integration).

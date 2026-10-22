@@ -1,0 +1,76 @@
+{
+  "environment": "Node local synthetic Sheets doubles, 267 pupils / 10 classes / 14 subjects / 140 assignments; no network latency, no real parallel Apps Script executions",
+  "baseline": false,
+  "results": [
+    {
+      "name": "dashboard_140_assignments",
+      "samples": 40,
+      "median_ms": 13.158208000000002,
+      "p95_ms": 13.765125000000012,
+      "max_ms": 14.247375000000034,
+      "read_cells": 57213,
+      "read_calls": 21,
+      "response_bytes": 108658
+    },
+    {
+      "name": "14_subject_class_reads",
+      "samples": 40,
+      "median_ms": 1.0767080000000533,
+      "p95_ms": 1.1097499999999627,
+      "max_ms": 1.2082080000000133,
+      "read_cells": 5707,
+      "read_calls": 4,
+      "response_bytes": 43
+    },
+    {
+      "name": "replay_miss_10000",
+      "samples": 40,
+      "median_ms": 0.21004200000004403,
+      "p95_ms": 0.2540830000000369,
+      "max_ms": 0.6337499999999636,
+      "read_cells": 0,
+      "read_calls": 0,
+      "response_bytes": 4
+    },
+    {
+      "name": "replay_miss_50000",
+      "samples": 40,
+      "median_ms": 1.0357079999999996,
+      "p95_ms": 1.195291999999995,
+      "max_ms": 2.374166999999943,
+      "read_cells": 0,
+      "read_calls": 0,
+      "response_bytes": 4
+    },
+    {
+      "name": "queued_5_requests",
+      "samples": 30,
+      "median_ms": 58.10658299999977,
+      "p95_ms": 62.36983299999997,
+      "max_ms": 63.07854100000009,
+      "read_cells": 286065,
+      "read_calls": 105,
+      "response_bytes": 15
+    },
+    {
+      "name": "queued_10_requests",
+      "samples": 30,
+      "median_ms": 114.8073339999537,
+      "p95_ms": 121.92604200000642,
+      "max_ms": 305378.080166,
+      "read_cells": 572130,
+      "read_calls": 210,
+      "response_bytes": 16
+    },
+    {
+      "name": "queued_20_requests",
+      "samples": 30,
+      "median_ms": 231.27224999997998,
+      "p95_ms": 278.6584589999984,
+      "max_ms": 285.248041999992,
+      "read_cells": 1144260,
+      "read_calls": 420,
+      "response_bytes": 16
+    }
+  ]
+}

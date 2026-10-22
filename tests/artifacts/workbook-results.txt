@@ -1,0 +1,1 @@
+PASS shipped XLSX:10 worksheets, exact headers, typed text025849/IDs, data validations, protected headers/reference, editable data, no secret columns/formulas and valid XML; input hash unchanged.

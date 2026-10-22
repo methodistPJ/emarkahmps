@@ -1,0 +1,20 @@
+PASS Valid workbook preview is read-only for school records; complete cross-sheet plan
+PASS Missing sheet/header, numeric identity and duplicate references rejected
+PASS Preview ownership/expiry, confirmation and changed-database guards reject safely
+PASS One commit provisions classes, students/enrolments, pending teachers, assignments and two DRAFT exams
+PASS Native Sheets Date/UTC representations re-import without enrolment-history changes
+PASS Exact re-import skips stable records; established authentication remains unchanged
+PASS Safe name correction updates matching student; missing workbook rows do not delete records
+PASS Changes to enrolment history and existing teacher assignment rejected
+PASS Pending account cannot create normal session or use forged pre-existing workspace session
+PASS Admin-only single-use code issuance stores no plaintext code in Sheets or WAL
+PASS Invalid code and expired activation rejected and failures audited
+PASS Private code+temporary proof yields restricted capability, not workspace session
+PASS Expired limited capability cannot set permanent PIN
+PASS Permanent PIN policy and activation generation enforced; reissue revokes old tickets
+PASS Permanent activation consumes code/ticket, revokes related sessions and enables ordinary login
+PASS Optional subject defaults, complete readiness and explicit prepare preserve frozen cohort
+PASS Repeated invalid activation attempts trigger cooldown without issuing session
+PASS Leading-zero request/actor IDs retain idempotent journal receipt matching
+PASS Archive freeze blocks onboarding writes; rollback suspension preserves activated accounts
+19 school/onboarding tests passed; isolated Sheets/Google service doubles, not live Google integration.

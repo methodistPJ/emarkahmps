@@ -1,0 +1,12 @@
+{"kind":"sheet","id":"ws/s3a8h4","name":"00_START_HERE","index":0,"range":"A1:B54","address":"A1:B54"}
+{"kind":"sheet","id":"ws/m6q34v","name":"01_SCHOOL","index":1,"range":"A1:E5","address":"A1:E5"}
+{"kind":"sheet","id":"ws/84pq4i","name":"02_CLASSES","index":2,"range":"A1:E11","address":"A1:E11"}
+{"kind":"sheet","id":"ws/nq7eqy","name":"03_STUDENTS","index":3,"range":"A1:F18","address":"A1:F18"}
+{"kind":"sheet","id":"ws/ww34vp","name":"04_TEACHERS","index":4,"range":"A1:F6","address":"A1:F6"}
+{"kind":"sheet","id":"ws/dha5lu","name":"05_CLASS_TEACHERS","index":5,"range":"A1:D11","address":"A1:D11"}
+{"kind":"sheet","id":"ws/3e6j1h","name":"06_SUBJECT_ASSIGNMENTS","index":6,"range":"A1:E94","address":"A1:E94"}
+{"kind":"sheet","id":"ws/a0z8qj","name":"07_SUBJECTS","index":7,"range":"A1:F18","address":"A1:F18"}
+{"kind":"sheet","id":"ws/96rutx","name":"08_EXAMS","index":8,"range":"A1:G6","address":"A1:G6"}
+{"kind":"sheet","id":"ws/7oc4c3","name":"09_VALIDATION_REFERENCE","index":9,"range":"A1:B46","address":"A1:B46"}
+Inspect result written to file: /Users/muhaiminrahim/Documents/Codex/2026-10-13/referenced-chatgpt-conversation-this-is-an-2/work/upgrade-v103/candidate/assets/MPS-eAssessment-School-Setup-2026.xlsx.inspect.ndjson
+Exported the complete fictional school workbook and ten sheet previews.

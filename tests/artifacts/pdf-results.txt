@@ -1,0 +1,1 @@
+PASS PDF layout contract + parser: zero/F, TH, TB omission, name/remark bounds, EMPTY rejection, compressed-object page count, A4, wrong count/paper, corrupt file. No live Docs/Drive export was run.

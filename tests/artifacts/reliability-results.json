@@ -1,0 +1,42 @@
+[
+  {
+    "name": "A: ten pending changes survive draft serialization before autosave",
+    "status": "PASS"
+  },
+  {
+    "name": "B: disconnected save retains in-flight request and pending draft",
+    "status": "PASS"
+  },
+  {
+    "name": "C/J: committed response lost, retry reuses ID and applies exactly once",
+    "status": "PASS"
+  },
+  {
+    "name": "D: edits typed during previous batch keep new value and receive new version",
+    "status": "PASS"
+  },
+  {
+    "name": "E: navigation guard waits for pending marks and remarks",
+    "status": "PASS"
+  },
+  {
+    "name": "F: session-expired save preserves payload for same-user reauthentication",
+    "status": "PASS"
+  },
+  {
+    "name": "G/H: independent tabs/users with stale versions cannot silently overwrite",
+    "status": "PASS"
+  },
+  {
+    "name": "I: in-flight draft reconstructs after tab runtime loss using same request ID",
+    "status": "PASS"
+  },
+  {
+    "name": "Transport watchdog preserves default mutation ID and ignores late callback",
+    "status": "PASS"
+  },
+  {
+    "name": "Invalid raw values and corrupt drafts are retained; cross-subject finalization blocked",
+    "status": "PASS"
+  }
+]

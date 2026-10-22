@@ -1,0 +1,157 @@
+{
+  "STUDENTS": [
+    "student_id",
+    "full_name",
+    "student_status",
+    "created_at",
+    "updated_at"
+  ],
+  "ENROLMENTS": [
+    "enrolment_id",
+    "student_id",
+    "academic_year",
+    "class_id",
+    "start_date",
+    "end_date",
+    "status"
+  ],
+  "CLASSES": [
+    "class_id",
+    "academic_year",
+    "year_level",
+    "academic_stage",
+    "class_name",
+    "active"
+  ],
+  "USERS": [
+    "user_id",
+    "full_name",
+    "identification_code",
+    "account_alias",
+    "authentication_data",
+    "roles",
+    "active",
+    "auth_version",
+    "created_at",
+    "updated_at"
+  ],
+  "ASSIGNMENTS": [
+    "assignment_id",
+    "academic_year",
+    "user_id",
+    "class_id",
+    "subject_code",
+    "assignment_type",
+    "active"
+  ],
+  "SUBJECTS": [
+    "subject_code",
+    "subject_name",
+    "offered_year_levels",
+    "display_order",
+    "default_status",
+    "active"
+  ],
+  "EXAMS": [
+    "exam_id",
+    "academic_year",
+    "exam_type",
+    "opening_date",
+    "closing_date",
+    "status",
+    "grading_version",
+    "template_version",
+    "finalized_at",
+    "subject_snapshot"
+  ],
+  "GRADE_RULES": [
+    "rule_id",
+    "grading_version",
+    "minimum_score",
+    "maximum_score",
+    "grade",
+    "description",
+    "active"
+  ],
+  "MARKS": [
+    "mark_id",
+    "exam_id",
+    "student_id",
+    "subject_code",
+    "class_id_snapshot",
+    "student_name_snapshot",
+    "year_level_snapshot",
+    "score",
+    "mark_status",
+    "grade",
+    "record_version",
+    "updated_by",
+    "updated_at",
+    "default_tb",
+    "amendment_reason"
+  ],
+  "SUBMISSIONS": [
+    "submission_id",
+    "exam_id",
+    "class_id",
+    "subject_code",
+    "submitted_by",
+    "submitted_at",
+    "submission_status",
+    "revision",
+    "submitted_versions",
+    "tb_acknowledged",
+    "amended_by",
+    "amended_at"
+  ],
+  "CLASS_REVIEWS": [
+    "review_id",
+    "record_type",
+    "exam_id",
+    "class_id",
+    "student_id",
+    "student_name_snapshot",
+    "class_teacher_remark",
+    "record_version",
+    "remark_updated_at",
+    "class_finalization_revision",
+    "finalized_by",
+    "finalized_at",
+    "result_snapshot",
+    "pdf_status",
+    "pdf_file_id",
+    "pdf_url",
+    "pdf_revision",
+    "job_lease",
+    "job_owner",
+    "job_attempts",
+    "job_error"
+  ],
+  "AUDIT_LOG": [
+    "event_id",
+    "request_id",
+    "actor_id",
+    "action",
+    "entity_type",
+    "entity_id",
+    "old_value",
+    "new_value",
+    "reason",
+    "timestamp"
+  ],
+  "_STATE": [
+    "state_id",
+    "value"
+  ],
+  "_OPS": [
+    "op_id",
+    "request_id",
+    "actor_id",
+    "payload_hash",
+    "status",
+    "response",
+    "piece_index",
+    "plan",
+    "created_at"
+  ]
+}

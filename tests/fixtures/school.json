@@ -1,0 +1,1418 @@
+{
+  "version": "MPS-SCHOOL-1",
+  "sheets": {
+    "01_SCHOOL": [
+      {
+        "row": 5,
+        "values": {
+          "school_name": "SK Methodist Petaling Jaya",
+          "academic_year": 2026,
+          "headmistress_name": "Nama Guru Besar (GANTI CONTOH)",
+          "grading_version": "v1",
+          "template_version": "replacement-v1"
+        }
+      }
+    ],
+    "02_CLASSES": [
+      {
+        "row": 5,
+        "values": {
+          "class_id": "DEMO-1H",
+          "class_name": "1 Hibiscus (CONTOH)",
+          "academic_year": 2026,
+          "year_level": 1,
+          "active": true
+        }
+      },
+      {
+        "row": 6,
+        "values": {
+          "class_id": "DEMO-2H",
+          "class_name": "2 Hibiscus (CONTOH)",
+          "academic_year": 2026,
+          "year_level": 2,
+          "active": true
+        }
+      },
+      {
+        "row": 7,
+        "values": {
+          "class_id": "DEMO-3H",
+          "class_name": "3 Hibiscus (CONTOH)",
+          "academic_year": 2026,
+          "year_level": 3,
+          "active": true
+        }
+      },
+      {
+        "row": 8,
+        "values": {
+          "class_id": "DEMO-4H",
+          "class_name": "4 Hibiscus (CONTOH)",
+          "academic_year": 2026,
+          "year_level": 4,
+          "active": true
+        }
+      },
+      {
+        "row": 9,
+        "values": {
+          "class_id": "DEMO-5H",
+          "class_name": "5 Hibiscus (CONTOH)",
+          "academic_year": 2026,
+          "year_level": 5,
+          "active": true
+        }
+      },
+      {
+        "row": 10,
+        "values": {
+          "class_id": "DEMO-6H",
+          "class_name": "6 Hibiscus (CONTOH)",
+          "academic_year": 2026,
+          "year_level": 6,
+          "active": true
+        }
+      },
+      {
+        "row": 11,
+        "values": {
+          "class_id": "DEMO-1J",
+          "class_name": "1 Jasmine (CONTOH)",
+          "academic_year": 2026,
+          "year_level": 1,
+          "active": true
+        }
+      }
+    ],
+    "03_STUDENTS": [
+      {
+        "row": 5,
+        "values": {
+          "student_id": "DEMO-S001",
+          "full_name": "Alya Contoh",
+          "class_id": "DEMO-1H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 6,
+        "values": {
+          "student_id": "DEMO-S002",
+          "full_name": "Ben Contoh",
+          "class_id": "DEMO-1H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 7,
+        "values": {
+          "student_id": "DEMO-S003",
+          "full_name": "Chloe Contoh",
+          "class_id": "DEMO-2H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 8,
+        "values": {
+          "student_id": "DEMO-S004",
+          "full_name": "Danish Contoh",
+          "class_id": "DEMO-2H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 9,
+        "values": {
+          "student_id": "DEMO-S005",
+          "full_name": "Elisa Contoh",
+          "class_id": "DEMO-3H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 10,
+        "values": {
+          "student_id": "DEMO-S006",
+          "full_name": "Farhan Contoh",
+          "class_id": "DEMO-3H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 11,
+        "values": {
+          "student_id": "DEMO-S007",
+          "full_name": "Grace Contoh",
+          "class_id": "DEMO-4H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 12,
+        "values": {
+          "student_id": "DEMO-S008",
+          "full_name": "Haziq Contoh",
+          "class_id": "DEMO-4H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 13,
+        "values": {
+          "student_id": "DEMO-S009",
+          "full_name": "Iris Contoh",
+          "class_id": "DEMO-5H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 14,
+        "values": {
+          "student_id": "DEMO-S010",
+          "full_name": "Johan Contoh",
+          "class_id": "DEMO-5H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 15,
+        "values": {
+          "student_id": "DEMO-S011",
+          "full_name": "Kiran Contoh",
+          "class_id": "DEMO-6H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 16,
+        "values": {
+          "student_id": "DEMO-S012",
+          "full_name": "Liyana Contoh",
+          "class_id": "DEMO-6H",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 17,
+        "values": {
+          "student_id": "DEMO-S013",
+          "full_name": "Mei Contoh",
+          "class_id": "DEMO-1J",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      },
+      {
+        "row": 18,
+        "values": {
+          "student_id": "DEMO-S014",
+          "full_name": "Naufal Contoh",
+          "class_id": "DEMO-1J",
+          "start_date": "2026-01-12",
+          "student_status": "ACTIVE",
+          "enrolment_status": "ACTIVE"
+        }
+      }
+    ],
+    "04_TEACHERS": [
+      {
+        "row": 5,
+        "values": {
+          "teacher_ref": "DEMO-T01",
+          "full_name": "Nur Amani Binti Contoh",
+          "identification_code": "025849",
+          "account_alias": "",
+          "active": true,
+          "role": "CLASS_TEACHER|SUBJECT_TEACHER"
+        }
+      },
+      {
+        "row": 6,
+        "values": {
+          "teacher_ref": "DEMO-T02",
+          "full_name": "Daniel Contoh Kumar",
+          "identification_code": "004216",
+          "account_alias": "jasmine",
+          "active": true,
+          "role": "CLASS_TEACHER|SUBJECT_TEACHER"
+        }
+      }
+    ],
+    "05_CLASS_TEACHERS": [
+      {
+        "row": 5,
+        "values": {
+          "class_id": "DEMO-1H",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 6,
+        "values": {
+          "class_id": "DEMO-2H",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 7,
+        "values": {
+          "class_id": "DEMO-3H",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 8,
+        "values": {
+          "class_id": "DEMO-4H",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 9,
+        "values": {
+          "class_id": "DEMO-5H",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 10,
+        "values": {
+          "class_id": "DEMO-6H",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 11,
+        "values": {
+          "class_id": "DEMO-1J",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      }
+    ],
+    "06_SUBJECT_ASSIGNMENTS": [
+      {
+        "row": 5,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "BM",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 6,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "BI",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 7,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "MM",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 8,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "SN",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 9,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "PI",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 10,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "PM",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 11,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "BA",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 12,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "BC",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 13,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "BT",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 14,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "PJPK",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 15,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "MZ",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 16,
+        "values": {
+          "class_id": "DEMO-1H",
+          "subject_code": "PSV",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 17,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "BM",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 18,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "BI",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 19,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "MM",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 20,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "SN",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 21,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "PI",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 22,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "PM",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 23,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "BA",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 24,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "BC",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 25,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "BT",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 26,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "PJPK",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 27,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "MZ",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 28,
+        "values": {
+          "class_id": "DEMO-2H",
+          "subject_code": "PSV",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 29,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "BM",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 30,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "BI",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 31,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "MM",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 32,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "SN",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 33,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "PI",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 34,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "PM",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 35,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "BA",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 36,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "BC",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 37,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "BT",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 38,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "PJPK",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 39,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "MZ",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 40,
+        "values": {
+          "class_id": "DEMO-3H",
+          "subject_code": "PSV",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 41,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "BM",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 42,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "BI",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 43,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "MM",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 44,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "SN",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 45,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "PI",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 46,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "PM",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 47,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "BA",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 48,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "BC",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 49,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "BT",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 50,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "PJPK",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 51,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "MZ",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 52,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "PSV",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 53,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "SEJ",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 54,
+        "values": {
+          "class_id": "DEMO-4H",
+          "subject_code": "RBT",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 55,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "BM",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 56,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "BI",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 57,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "MM",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 58,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "SN",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 59,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "PI",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 60,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "PM",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 61,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "BA",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 62,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "BC",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 63,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "BT",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 64,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "PJPK",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 65,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "MZ",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 66,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "PSV",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 67,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "SEJ",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 68,
+        "values": {
+          "class_id": "DEMO-5H",
+          "subject_code": "RBT",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 69,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "BM",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 70,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "BI",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 71,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "MM",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 72,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "SN",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 73,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "PI",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 74,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "PM",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 75,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "BA",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 76,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "BC",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 77,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "BT",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 78,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "PJPK",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 79,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "MZ",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 80,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "PSV",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 81,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "SEJ",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 82,
+        "values": {
+          "class_id": "DEMO-6H",
+          "subject_code": "RBT",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 83,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "BM",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 84,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "BI",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 85,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "MM",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 86,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "SN",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 87,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "PI",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 88,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "PM",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 89,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "BA",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 90,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "BC",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 91,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "BT",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 92,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "PJPK",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 93,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "MZ",
+          "teacher_ref": "DEMO-T01",
+          "academic_year": 2026,
+          "active": true
+        }
+      },
+      {
+        "row": 94,
+        "values": {
+          "class_id": "DEMO-1J",
+          "subject_code": "PSV",
+          "teacher_ref": "DEMO-T02",
+          "academic_year": 2026,
+          "active": true
+        }
+      }
+    ],
+    "07_SUBJECTS": [
+      {
+        "row": 5,
+        "values": {
+          "subject_code": "BM",
+          "subject_name": "Bahasa Melayu",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 1,
+          "default_status": "EMPTY",
+          "active": true
+        }
+      },
+      {
+        "row": 6,
+        "values": {
+          "subject_code": "BI",
+          "subject_name": "Bahasa Inggeris",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 2,
+          "default_status": "EMPTY",
+          "active": true
+        }
+      },
+      {
+        "row": 7,
+        "values": {
+          "subject_code": "MM",
+          "subject_name": "Matematik",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 3,
+          "default_status": "EMPTY",
+          "active": true
+        }
+      },
+      {
+        "row": 8,
+        "values": {
+          "subject_code": "SN",
+          "subject_name": "Sains",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 4,
+          "default_status": "EMPTY",
+          "active": true
+        }
+      },
+      {
+        "row": 9,
+        "values": {
+          "subject_code": "PI",
+          "subject_name": "Pendidikan Islam",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 5,
+          "default_status": "TB",
+          "active": true
+        }
+      },
+      {
+        "row": 10,
+        "values": {
+          "subject_code": "PM",
+          "subject_name": "Pendidikan Moral",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 6,
+          "default_status": "TB",
+          "active": true
+        }
+      },
+      {
+        "row": 11,
+        "values": {
+          "subject_code": "BA",
+          "subject_name": "Bahasa Arab",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 7,
+          "default_status": "TB",
+          "active": true
+        }
+      },
+      {
+        "row": 12,
+        "values": {
+          "subject_code": "BC",
+          "subject_name": "Bahasa Cina",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 8,
+          "default_status": "TB",
+          "active": true
+        }
+      },
+      {
+        "row": 13,
+        "values": {
+          "subject_code": "BT",
+          "subject_name": "Bahasa Tamil",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 9,
+          "default_status": "TB",
+          "active": true
+        }
+      },
+      {
+        "row": 14,
+        "values": {
+          "subject_code": "PJPK",
+          "subject_name": "Pendidikan Jasmani dan Kesihatan",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 10,
+          "default_status": "EMPTY",
+          "active": true
+        }
+      },
+      {
+        "row": 15,
+        "values": {
+          "subject_code": "MZ",
+          "subject_name": "Pendidikan Muzik",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 11,
+          "default_status": "EMPTY",
+          "active": true
+        }
+      },
+      {
+        "row": 16,
+        "values": {
+          "subject_code": "PSV",
+          "subject_name": "Pendidikan Seni Visual",
+          "offered_year_levels": "1,2,3,4,5,6",
+          "display_order": 12,
+          "default_status": "EMPTY",
+          "active": true
+        }
+      },
+      {
+        "row": 17,
+        "values": {
+          "subject_code": "SEJ",
+          "subject_name": "Sejarah",
+          "offered_year_levels": "4,5,6",
+          "display_order": 13,
+          "default_status": "EMPTY",
+          "active": true
+        }
+      },
+      {
+        "row": 18,
+        "values": {
+          "subject_code": "RBT",
+          "subject_name": "Reka Bentuk dan Teknologi",
+          "offered_year_levels": "4,5,6",
+          "display_order": 14,
+          "default_status": "EMPTY",
+          "active": true
+        }
+      }
+    ],
+    "08_EXAMS": [
+      {
+        "row": 5,
+        "values": {
+          "academic_year": 2026,
+          "exam_type": "UPSA",
+          "opening_date": "2026-04-20T00:00:00+08:00",
+          "closing_date": "2026-05-29T00:00:00+08:00",
+          "grading_version": "v1",
+          "template_version": "replacement-v1",
+          "intended_status": "DRAFT"
+        }
+      },
+      {
+        "row": 6,
+        "values": {
+          "academic_year": 2026,
+          "exam_type": "UASA",
+          "opening_date": "2026-10-12T00:00:00+08:00",
+          "closing_date": "2026-11-20T00:00:00+08:00",
+          "grading_version": "v1",
+          "template_version": "replacement-v1",
+          "intended_status": "DRAFT"
+        }
+      }
+    ]
+  }
+}

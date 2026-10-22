@@ -1,0 +1,19 @@
+# v1.0.3-rc.1 — 21 October 2026
+
+Baseline: latest v1.0.2 Release Candidate in this workspace; preserved separately. Selective extension, not a rebuild.
+
+- Real branded10-sheet Excel template, fictional school data,14 canonical subjects, text IDs/025849, dates, dropdowns and native header/reference protection; identical bytes downloadable from wizard and standalone file.
+- Vendored local JSZip3.10.1 and bounded CRC-checked OOXML parser; mandatory fields/sheets, serial and ISO Excel dates, types, duplicate cell/row references, formula/error/external/macro/encryption/ZIP64/size rejection. No external parsing service.
+- Admin six-stage import wizard with row/field errors, counts, confirmation, honest progress, safe retries, completion/readiness and preserved CSV/history entry point.
+- Admin-only preview/details/commit with ownership/content/expiry/database binding; compact journal receipts support large previews. Deterministic user/ref/student/enrolment/assignment/exam matching, same-workbook re-import and no implicit deletion.
+- Existing teacher PINs retained; temporary proof derived locally with existing PBKDF2/HMAC mechanism only for new accounts. Profile fields committed within WAL; only safe display properties synchronized after commit.
+- Pending-account module/session enforcement; private per-user activation code issuance/reissue, digest-only persistence, expiry/cooldown/audit, restricted tickets, mandatory permanent PIN UI and session/version revocation.
+- Readiness for current classes/rosters, teachers/pending activation, class/subject assignments, subjects and exams. Explicit prepare/open calls original prepareExam_ only after structural readiness. Existing subject co-teaching preserved; one active class teacher still required.
+- Generic identifier/code text formatting before transactional writes/year copy, extending the six-digit fix to leading-zero student identifiers.
+- Post-import admin master-data/metrics refresh and cleared stale error banner after confirmed retry. No blocking full-page overlay during regular autosave; navigation guard protects an active import.
+- Private editor-only pending-account suspension safeguard for controlled rollback; no automatic migration, trigger installation, secret rotation or deployment.
+- All v1.0.2 backend/reliability/PDF/concurrency/browser regressions rerun; new workbook, onboarding, actual-browser/synthetic-backend and2000-pupil interrupted-import suites included.
+
+No production data was changed by this engagement. Live Google/Excel/Safari/permissions/PDF/quota acceptance is still required.
+
+Identifier/date consistency checks also cover native Sheets Date/UTC equivalence, archive text formats and leading-zero journal request/actor IDs. These are storage/comparison safeguards, not a change to examination dates or grade policy.

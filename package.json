@@ -1,0 +1,16 @@
+{
+  "name": "mps-eassessment-release-candidate",
+  "version": "1.0.3-rc.1",
+  "private": true,
+  "description": "One-workbook school setup and secure teacher activation; controlled in-place upgrade",
+  "scripts": {
+    "build": "python3 tools/build.py",
+    "test": "node tools/test.cjs",
+    "test:browser": "node tests/browser.test.mjs",
+    "benchmark": "node tests/performance.cjs",
+    "test:school-browser": "node tests/school-browser.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "version": "1.0.3-rc.1",
+  "date": "2026-10-21",
+  "status": "release-candidate-staging-acceptance-required",
+  "baseline": "latest workspace v1.0.2 Release Candidate",
+  "baseline_checksums_file_sha256": "26a2ddb04c6eaed7a7827c80df62da818a6057023786f49593b4425bb2afb9cb",
+  "schema_changed": false,
+  "metadata_migration": "additive authentication_data and _STATE only; no installer",
+  "production_deployed": false,
+  "production_data_modified": false,
+  "deployment_url_changed": false,
+  "existing_verifier_format_changed": false,
+  "vendor_jszip": {
+    "version": "3.10.1",
+    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e"
+  },
+  "rollback_warning": "Suspend all pending accounts before reverting to v1.0.2 auth."
+}

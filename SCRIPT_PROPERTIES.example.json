@@ -1,0 +1,14 @@
+{
+  "notice": "Preserve all existing production secrets/IDs. No new required property or installer. Workbook cannot write infrastructure.",
+  "existing_required": [
+    "SPREADSHEET_ID",
+    "DRIVE_PARENT_ID",
+    "TEMPLATE_ID",
+    "ACADEMIC_YEAR",
+    "AUTH_PEPPER"
+  ],
+  "school_profile": "Committed school-profile state synchronizes SCHOOL_NAME/HEADMISTRESS_NAME only.",
+  "optional": {
+    "DIAGNOSTICS_ENABLED": "false"
+  }
+}

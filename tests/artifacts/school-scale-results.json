@@ -4,7 +4,7 @@
   "classes": 60,
   "teachers": 20,
   "subject_assignments": 780,
-  "elapsed_local_ms": 1107.949459,
+  "elapsed_local_ms": 1101.1307080000001,
   "journal_rows": 24,
   "environment": "Local synthetic Google-service doubles; includes real PBKDF2 cost, not cloud latency",
   "fault": "PREPARED crash and repeated recovery/replay"

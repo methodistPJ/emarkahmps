@@ -58,3 +58,10 @@ function pdfBytes_(reference) {
     mime: 'application/pdf'
   };
 }
+
+// Infrastructure links are visible only after an administrator session is verified.
+function adminLinks_(db, u) {
+  admin_(u);
+  var id = config_().spreadsheet;
+  return { database_url: id ? 'https://docs.google.com/spreadsheets/d/' + encodeURIComponent(id) + '/edit' : '' };
+}

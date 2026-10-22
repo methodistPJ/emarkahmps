@@ -39,6 +39,7 @@ function dispatch_(envelope) {
         marksGet: marksGet_,
         reviewGet: reviewGet_,
         adminData: adminData_,
+        adminLinks: adminLinks_,
         analytics: analytics_,
         compare: compare_,
         pdfDownload: pdfReference_,

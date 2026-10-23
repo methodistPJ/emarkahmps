@@ -42,10 +42,11 @@
             exam_id: M.context.exam_id,
             class_id: M.context.class_id,
             mode: M.context.mode || 'SUBJECT_ENTRY',
-            changes: [...M.pending.values()]
+            subject_code: M.context.mode === 'CLASS_REVIEW' ? '' : M.context.subject_code || '',
+            changes: [...M.pending.values()].slice(0, 60)
           }
         };
-        M.pending.clear();
+        M.inflight.payload.changes.forEach(change => M.pending.delete(change.mark_id));
         M.persist();
       }
       M.saveLabel('Menyimpan…');
@@ -182,7 +183,7 @@
         };
       latest.marks.forEach(m => count[m.mark_status]++);
       document.querySelector('#submission-review').innerHTML =
-        `<section class="panel"><h3>Semakan Penghantaran</h3><p>${latest.marks.length} murid · Angka ${count.SCORED} · TH ${count.TH} · TB ${count.TB} · EMPTY ${count.EMPTY}</p><label><input type="checkbox" id="tb-ack"> Saya telah menyemak semua status TB${count.TB===latest.marks.length?' — SEMUA MURID TB':''}.</label><button id="confirm-submit" ${count.EMPTY?'disabled':''}>Sahkan Penghantaran ${M.esc(subject_code)}</button></section>`;
+        `<section class="panel"><h3>Semakan Penghantaran</h3><p>${latest.marks.length} murid · Angka ${count.SCORED} · TH ${count.TH} · TB ${count.TB} · EMPTY ${count.EMPTY}</p><label ${count.TB ? '' : 'hidden'}><input type="checkbox" id="tb-ack"> Saya telah menyemak semua status TB${count.TB===latest.marks.length?' — SEMUA MURID TB':''}.</label><button id="confirm-submit" ${count.EMPTY?'disabled':''}>Sahkan Penghantaran ${M.esc(subject_code)}</button></section>`;
       document.querySelector('#confirm-submit').onclick = () => M.run(async () => {
         const ack = document.querySelector('#tb-ack').checked;
         await M.call('submit', {

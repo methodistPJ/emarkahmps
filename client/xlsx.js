@@ -173,7 +173,8 @@
       }
       const header = rows.get(C.headerRow) || new Map(),
         headers = [...header].sort((a, b) => a[0] - b[0]).filter(([, v]) => v !== '').map(([i, v]) => [i, String(v).trim()]);
-      if (headers.length !== fields.length || fields.some(f => headers.filter(([, v]) => v === f).length !== 1)) {
+      const optional = (C.optionalFields || {})[name] || [];
+      if (fields.some(f => headers.filter(([, v]) => v === f).length !== 1) || headers.some(([,v]) => !fields.includes(v) && !optional.includes(v)) || new Set(headers.map(([,v])=>v)).size !== headers.length || (optional.some(f => headers.some(([,v]) => v === f)) && !optional.every(f => headers.some(([,v]) => v === f)))) {
         issues.push({
           sheet: name,
           row: C.headerRow,

@@ -42,3 +42,12 @@ Import tidak menyediakan/membuka exam secara automatik, termasuk niat OPEN. Sete
 Had setiap workbook:8MB compressed,40MB expanded,12MB satu bahagian ZIP,10,000 rekod input,2000 murid,300 guru,60 kelas. Setiap kelas untuk preparation:1–60 murid aktif. Had ini bukan jaminan masa Google; uji salinan staging mengikut saiz sekolah.
 
 Import CSV roster dan sejarah lama masih tersedia melalui butang Import CSV / Sejarah Lama.
+
+
+## Pilihan subjek murid
+
+Dalam `03_STUDENTS`, tambah dua kolum pada baris header 4: `religion_subject` dan `elective_subject`. Setiap murid ACTIVE dengan enrolmen ACTIVE mesti mempunyai tepat satu PI/PM dan satu BA/BC/BT jika kolum ini digunakan. Murid LEFT/ENDED boleh dibiarkan kosong. Kedua-dua kolum perlu hadir bersama. Template baharu mengandungi kolum tersebut; workbook lama enam kolum masih diterima tanpa memadam pilihan yang pernah diimport.
+
+Pilihan diimport ke metadata tahun/kelas, kemudian dibekukan ketika menyediakan setiap peperiksaan. Hanya murid yang mengambil subjek muncul kepada guru subjek. Rekod subjek lain kekal TB dalam semakan kelas/slip. Peperiksaan sedia ada tidak diubah secara automatik. Selepas peperiksaan disediakan, pertukaran pilihan ditolak oleh import dan memerlukan semakan khusus pentadbir.
+
+Sheet pengisian tidak diselaraskan secara automatik: selepas edit, muat turun XLSX dan import semula dengan pratonton. Tarikh pengisian peperiksaan boleh dikemas kini melalui admin Web App. Kod pengenalan guru perlu teks enam digit; alias menggunakan huruf kecil, angka, `_` atau `-`. PIN tidak boleh diisi dalam kolum identification_code.

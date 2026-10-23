@@ -1,3 +1,12 @@
+## 2026-10-24 — Student subject participation and faster entry
+
+- Add optional paired religion_subject (PI/PM) and elective_subject (BA/BC/BT) columns to student setup, with strict active-pupil validation. Legacy six-column imports remain supported.
+- Store choices by academic year and class in existing _STATE metadata; freeze the cohort separately for each prepared exam. Reimports cannot silently change prepared participation.
+- Selected optional subjects start EMPTY. Other optional subjects remain TB in class review, results and PDFs, and are excluded from teacher entry and submission. Server validation blocks writes to non-participants.
+- Read contiguous per-subject mark blocks for newly prepared exams, falling back safely for existing exams. Cache immutable grade versions and frozen subject snapshots for up to ten minutes; keep marks, access, sessions and exam status fresh.
+- Drain autosave queues in batches of at most 60 while retaining pending edits and the original retry receipts. Zero-participant optional subjects are satisfied during preparation rather than blocking class completion.
+- Core regression suites and nine participation/index/cache cases passed with service doubles. Actual browser UI verified synthetic login, filtered entry, saved grade, submission locking and extended-template import preview. School setup Sheet updated separately; production school data was not imported.
+
 ## 2026-10-22 — Task-first workspace
 
 - Replace the long landing page with a concise login and school workflow.

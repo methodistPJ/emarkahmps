@@ -54,3 +54,10 @@ Actual ZIP/XLSX variants tested: missing required worksheet, formula input, exte
 ## Limits and acceptance
 
 These tests establish local behaviour, not live quotas/latency/permissions/lock fairness or cloud durability. The large-import elapsed value is a single local observation, not median/P95 or an Apps Script SLA. Actual Google HTMLService iframe, private code distribution, account onboarding, Microsoft Excel round-trip editing, iPad/iPhone Safari, accessibility, two-client Google races, trigger jobs and real combined PDFs must pass DEPLOYMENT_GUIDE before rollout. Rollback safety must be rehearsed in staging. A derived proof cannot cryptographically attest malicious-client PIN length; this preserved-protocol boundary is documented in SECURITY_REVIEW.
+
+
+## 24 October 2026: participation and performance
+
+Core suites pass, including nine new participation/index/cache tests and an autosave queue of 125 changes drained as 60/60/5. A local browser using the actual bundled UI and backend service doubles verified synthetic teacher login, one eligible PI pupil, autosave of 87/A (version 2), preservation of the other pupil's TB (version 1), successful submit/locking, and extended-template import preview. A new subject read fetched 2 fixture rows rather than the class's complete 28-mark block. This is structural and synthetic evidence, not a measured live latency guarantee. No school marks were entered during testing.
+
+School setup changes were verified separately by export/readback. Real import still requires valid teacher identification codes. Existing prepared exams retain legacy participation until explicitly reviewed; this release does not rewrite their marks or cohorts.

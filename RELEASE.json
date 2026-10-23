@@ -1,6 +1,6 @@
 {
   "version": "1.0.3-rc.1",
-  "date": "2026-10-21",
+  "date": "2026-10-24",
   "status": "release-candidate-staging-acceptance-required",
   "baseline": "latest workspace v1.0.2 Release Candidate",
   "baseline_checksums_file_sha256": "26a2ddb04c6eaed7a7827c80df62da818a6057023786f49593b4425bb2afb9cb",
@@ -15,9 +15,11 @@
     "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e"
   },
   "rollback_warning": "Suspend all pending accounts before reverting to v1.0.2 auth.",
-  "production_deployment_date": "2026-10-22",
-  "apps_script_version": 4,
-  "previous_apps_script_version": 3,
-  "live_verification": "updated public login page; authenticated teacher/admin flows verified with synthetic browser fixtures",
-  "ui_revision": "task-first-home"
+  "production_deployment_date": "2026-10-24",
+  "apps_script_version": 5,
+  "previous_apps_script_version": 4,
+  "live_verification": "Version 5 deployed on existing URL; real-school import blocked by teacher identifiers. Synthetic browser tests cover filtered entry/save/submit and template preview.",
+  "ui_revision": "subject-participation-indexed-entry",
+  "participation_revision": "optional-student-fields-v1",
+  "verification": "Core suites plus nine participation/index/cache tests; synthetic browser entry/save/submit and template import preview; real-school import pending valid teacher identifiers."
 }

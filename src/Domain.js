@@ -35,12 +35,23 @@ function readable_(db, u, e, c, s) {
   fail_('FORBIDDEN', 'Kelas atau subjek ini bukan tugasan anda.');
 }
 
+// Cache only immutable versioned reference data. Live marks, access and exam status stay fresh.
+function referenceCache_(db, key, load) {
+  var cache = null, value = null, cacheKey = 'ref-v2:' + hash_(db.book.getId() + ':' + key);
+  try { cache = CacheService.getScriptCache(); value = cache.get(cacheKey); } catch (_) {}
+  if (value) { try { return JSON.parse(value); } catch (_) {} }
+  var result = load();
+  try { if (cache && (!Array.isArray(result) || result.length) && JSON.stringify(result).length < 80000) cache.put(cacheKey, JSON.stringify(result), 600); } catch (_) {}
+  return result;
+}
 function rules_(db, v) {
-  return db.read('GRADE_RULES').filter(function(r) {
-    return String(r.grading_version) === String(v);
-  }).sort(function(a, b) {
-    return Number(a.minimum_score) - Number(b.minimum_score);
-  });
+  var load = function() {
+    return db.read('GRADE_RULES').filter(function(r) { return String(r.grading_version) === String(v); })
+      .sort(function(a, b) { return Number(a.minimum_score) - Number(b.minimum_score); });
+  };
+  // A newly staged version is not published to shared cache before its durable commit.
+  if (Object.keys(db.staged).some(function(k) { return k.indexOf('GRADE_RULES:') === 0; })) return load();
+  return referenceCache_(db, 'grades:' + v, load);
 }
 
 function validateRules_(rules) {
@@ -105,7 +116,8 @@ function submission_(db, e, c, s) {
 }
 
 function subjectsExam_(db, e, level) {
-  return json_(exam_(db, e).subject_snapshot, []).filter(function(s) {
+  var snapshot = exam_(db, e).subject_snapshot;
+  return referenceCache_(db, 'subjects:' + hash_(String(snapshot)), function() { return json_(snapshot, []); }).filter(function(s) {
     return s.offered_year_levels.map(Number).indexOf(Number(level)) >= 0;
   }).sort(function(a, b) {
     return a.display_order - b.display_order;
@@ -147,4 +159,18 @@ function statistics_(marks) {
     }, {}),
     denominator: 'SCORED sahaja; TH, TB dan EMPTY dilaporkan berasingan.'
   };
+}
+
+var OPTIONAL_SUBJECTS_ = ['PI','PM','BA','BC','BT'];
+function takesSubject_(db, exam, cls, sub, student) {
+  if (OPTIONAL_SUBJECTS_.indexOf(sub) < 0) return true;
+  var block = db.state('block:' + key_([exam, cls]));
+  if (!block || !block.participation) return true; // Existing prepared exams retain legacy behaviour.
+  var selected = block.participation[student];
+  return !!selected && selected.indexOf(sub) >= 0;
+}
+function entryMarks_(db, exam, cls, sub) {
+  return db.marks(exam, cls, sub).filter(function(m) {
+    return takesSubject_(db, exam, cls, m.subject_code, m.student_id);
+  });
 }

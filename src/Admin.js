@@ -200,14 +200,16 @@ function prepareExam_(db, u, p, req) {
     return String(c.academic_year) === String(e.academic_year) && bool_(c.active);
   });
   need_(classes.length, 'Kelas tiada.');
-  var students = db.read('STUDENTS');
+  var students = db.read('STUDENTS'), participationEnabled = db.state('school-participation:' + e.academic_year);
+  var enrolments = db.read('ENROLMENTS').filter(function(n) { return String(n.academic_year) === String(e.academic_year); });
+  var studentIndex = {}; students.forEach(function(s) { studentIndex[s.student_id] = s; });
   classes.forEach(function(c) {
-    var roster = db.read('ENROLMENTS').filter(function(n) {
+    var selections = participationEnabled ? db.state('school-participation:' + e.academic_year + ':' + c.class_id) : null;
+    need_(!participationEnabled || selections, 'Pilihan subjek kelas belum lengkap.');
+    var roster = enrolments.filter(function(n) {
       return n.class_id === c.class_id && n.status === 'ACTIVE';
     }).map(function(n) {
-      return students.find(function(s) {
-        return s.student_id === n.student_id;
-      });
+      return studentIndex[n.student_id];
     }).filter(function(s) {
       return s && s.student_status === 'ACTIVE';
     }).sort(function(a, b) {
@@ -221,18 +223,29 @@ function prepareExam_(db, u, p, req) {
     var start = Math.max(db.sheet('MARKS').getLastRow(), db.read('MARKS').reduce(function(n, m) {
         return Math.max(n, m._row);
       }, 1)) + 1,
-      count = 0;
+      count = 0, subjectBlocks = {}, cohortSelections = {};
+    if (selections) roster.forEach(function(student) {
+      var chosen = selections[student.student_id];
+      need_(Array.isArray(chosen) && chosen.length === 2 && ['PI','PM'].indexOf(chosen[0]) >= 0 && ['BA','BC','BT'].indexOf(chosen[1]) >= 0, 'Pilihan subjek murid belum lengkap.');
+      need_(chosen.every(function(code) { return subs.some(function(sub) { return sub.subject_code === code; }); }), 'Subjek pilihan murid tidak ditawarkan.');
+      cohortSelections[student.student_id] = chosen;
+    });
     subs.forEach(function(s) {
+      subjectBlocks[s.subject_code] = {start: start + count, count: roster.length};
+      var noParticipants = selections && OPTIONAL_SUBJECTS_.indexOf(s.subject_code) >= 0 && !roster.some(function(student) { return cohortSelections[student.student_id].indexOf(s.subject_code) >= 0; });
       db.put('SUBMISSIONS', {
         submission_id: key_([e.exam_id, c.class_id, s.subject_code]),
         exam_id: e.exam_id,
         class_id: c.class_id,
         subject_code: s.subject_code,
-        submission_status: 'DRAFT',
-        revision: 0,
-        tb_acknowledged: false
+        submission_status: noParticipants ? 'SUBMITTED' : 'DRAFT',
+        revision: noParticipants ? 1 : 0,
+        tb_acknowledged: !!noParticipants,
+        submitted_by: noParticipants ? u.user_id : '',
+        submitted_at: noParticipants ? now_() : ''
       });
       roster.forEach(function(student) {
+        var initial = selections && OPTIONAL_SUBJECTS_.indexOf(s.subject_code) >= 0 ? (cohortSelections[student.student_id].indexOf(s.subject_code) >= 0 ? 'EMPTY' : 'TB') : s.default_status;
         db.put('MARKS', {
           mark_id: key_([e.exam_id, student.student_id, s.subject_code]),
           exam_id: e.exam_id,
@@ -243,9 +256,9 @@ function prepareExam_(db, u, p, req) {
           year_level_snapshot: c.year_level,
           score: '',
           grade: '',
-          mark_status: s.default_status,
+          mark_status: initial,
           record_version: 1,
-          default_tb: s.default_status === 'TB',
+          default_tb: initial === 'TB',
           updated_at: now_()
         });
         count++;
@@ -253,7 +266,9 @@ function prepareExam_(db, u, p, req) {
     });
     db.setState('block:' + key_([e.exam_id, c.class_id]), {
       start: start,
-      count: count
+      count: count,
+      subjects: subjectBlocks,
+      participation: selections ? cohortSelections : null
     });
     roster.forEach(function(s) {
       db.put('CLASS_REVIEWS', {

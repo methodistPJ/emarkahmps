@@ -110,13 +110,17 @@ Db_.prototype.marks = function(exam, cls, sub) {
     meta = this.state('block:' + k);
   if (!meta) return [];
   need_(Number.isInteger(meta.start) && meta.start >= 2 && Number.isInteger(meta.count) && meta.count > 0, 'Indeks markah rosak. Hubungi pentadbir.');
-  if (!this.blocks[k]) {
-    this.blocks[k] = this.range('MARKS', meta.start, meta.count);
-    need_(this.blocks[k].every(function(r) {
-      return r.exam_id === exam && r.class_id_snapshot === cls;
+  var segment = sub && meta.subjects && meta.subjects[sub], cacheKey = segment ? k + ':' + sub : k;
+  if (segment) {
+    need_(Number.isInteger(segment.start) && Number.isInteger(segment.count) && segment.count > 0 && segment.start >= meta.start && segment.start + segment.count <= meta.start + meta.count, 'Indeks subjek rosak.');
+  }
+  if (!this.blocks[cacheKey]) {
+    this.blocks[cacheKey] = this.range('MARKS', segment ? segment.start : meta.start, segment ? segment.count : meta.count);
+    need_(this.blocks[cacheKey].every(function(r) {
+      return r.exam_id === exam && r.class_id_snapshot === cls && (!segment || r.subject_code === sub);
     }), 'Indeks kelas tidak sepadan. Tiada markah ditulis.');
   }
-  return this.overlay('MARKS', this.blocks[k]).filter(function(r) {
+  return this.overlay('MARKS', this.blocks[cacheKey]).filter(function(r) {
     return !sub || r.subject_code === sub;
   });
 };

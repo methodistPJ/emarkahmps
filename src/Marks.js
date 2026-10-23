@@ -15,8 +15,10 @@ function dashboard_(db, u) {
     }) : assignments_(db, u, e.exam_id);
     assignments.forEach(function(a) {
       var c = class_(db, a.class_id),
-        marks = db.marks(e.exam_id, c.class_id, a.subject_code || null),
+        marks = a.subject_code ? entryMarks_(db, e.exam_id, c.class_id, a.subject_code) : db.marks(e.exam_id, c.class_id),
         m = metadata_(db, e.exam_id, c.class_id);
+      var block = a.subject_code && db.state('block:' + key_([e.exam_id, c.class_id]));
+      if (a.subject_code && !marks.length && block && block.participation) return;
       tasks.push({
         exam: examView_(e),
         class: c,
@@ -45,7 +47,7 @@ function marksGet_(db, u, p) {
   readable_(db, u, p.exam_id, p.class_id, p.subject_code);
   var c = class_(db, p.class_id);
   return {
-    marks: db.marks(p.exam_id, p.class_id, p.subject_code),
+    marks: p.subject_code ? entryMarks_(db, p.exam_id, p.class_id, p.subject_code) : db.marks(p.exam_id, p.class_id),
     rules: rules_(db, exam_(db, p.exam_id).grading_version),
     subjects: subjectsExam_(db, p.exam_id, c.year_level),
     submission: p.subject_code ? submission_(db, p.exam_id, p.class_id, p.subject_code) : null,
@@ -58,7 +60,7 @@ function saveMarks_(db, u, p, req) {
   need_(Array.isArray(p.changes) && p.changes.length > 0 && p.changes.length <= 60,
     'Kelompok markah tidak sah.');
   var classTeacher = p.mode === 'CLASS_REVIEW' && canClass_(db, u, p.exam_id, p.class_id),
-    rows = db.marks(p.exam_id, p.class_id),
+    rows = db.marks(p.exam_id, p.class_id, classTeacher ? null : p.subject_code || null),
     rules = rules_(db, exam_(db, p.exam_id).grading_version),
     seen = {},
     updates = [];
@@ -69,6 +71,7 @@ function saveMarks_(db, u, p, req) {
       return x.mark_id === change.mark_id;
     });
     need_(m, 'Rekod markah tidak dijumpai.');
+    need_(takesSubject_(db, p.exam_id, p.class_id, m.subject_code, m.student_id) || classTeacher && change.value === 'TB', 'Murid tidak mengambil subjek ini.');
     if (!classTeacher) {
       need_(canSubject_(db, u, p.exam_id, p.class_id, m.subject_code), 'Subjek bukan tugasan anda.');
       var sub = submission_(db, p.exam_id, p.class_id, m.subject_code);
@@ -127,7 +130,7 @@ function submit_(db, u, p, req) {
   need_(canSubject_(db, u, p.exam_id, p.class_id, p.subject_code),
     'Hanya guru subjek ditugaskan boleh menghantar.');
   writable_(db, p.exam_id, p.class_id);
-  var rows = db.marks(p.exam_id, p.class_id, p.subject_code),
+  var rows = entryMarks_(db, p.exam_id, p.class_id, p.subject_code),
     s = submission_(db, p.exam_id, p.class_id, p.subject_code);
   need_(rows.length && s, 'Subjek belum disediakan.');
   need_(s.submission_status === 'DRAFT', 'Subjek telah dihantar.');

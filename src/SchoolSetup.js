@@ -4,16 +4,79 @@ var SETUP_CONTRACT_ = {
   "version": "MPS-SCHOOL-1",
   "headerRow": 4,
   "sheets": {
-    "01_SCHOOL": ["school_name", "academic_year", "headmistress_name", "grading_version", "template_version"],
-    "02_CLASSES": ["class_id", "class_name", "academic_year", "year_level", "active"],
-    "03_STUDENTS": ["student_id", "full_name", "class_id", "start_date", "student_status", "enrolment_status"],
-    "04_TEACHERS": ["teacher_ref", "full_name", "identification_code", "account_alias", "active", "role"],
-    "05_CLASS_TEACHERS": ["class_id", "teacher_ref", "academic_year", "active"],
-    "06_SUBJECT_ASSIGNMENTS": ["class_id", "subject_code", "teacher_ref", "academic_year", "active"],
-    "07_SUBJECTS": ["subject_code", "subject_name", "offered_year_levels", "display_order", "default_status", "active"],
-    "08_EXAMS": ["academic_year", "exam_type", "opening_date", "closing_date", "grading_version", "template_version", "intended_status"]
+    "01_SCHOOL": [
+      "school_name",
+      "academic_year",
+      "headmistress_name",
+      "grading_version",
+      "template_version"
+    ],
+    "02_CLASSES": [
+      "class_id",
+      "class_name",
+      "academic_year",
+      "year_level",
+      "active"
+    ],
+    "03_STUDENTS": [
+      "student_id",
+      "full_name",
+      "class_id",
+      "start_date",
+      "student_status",
+      "enrolment_status"
+    ],
+    "04_TEACHERS": [
+      "teacher_ref",
+      "full_name",
+      "identification_code",
+      "account_alias",
+      "active",
+      "role"
+    ],
+    "05_CLASS_TEACHERS": [
+      "class_id",
+      "teacher_ref",
+      "academic_year",
+      "active"
+    ],
+    "06_SUBJECT_ASSIGNMENTS": [
+      "class_id",
+      "subject_code",
+      "teacher_ref",
+      "academic_year",
+      "active"
+    ],
+    "07_SUBJECTS": [
+      "subject_code",
+      "subject_name",
+      "offered_year_levels",
+      "display_order",
+      "default_status",
+      "active"
+    ],
+    "08_EXAMS": [
+      "academic_year",
+      "exam_type",
+      "opening_date",
+      "closing_date",
+      "grading_version",
+      "template_version",
+      "intended_status"
+    ]
   },
-  "requiredSheets": ["00_START_HERE", "01_SCHOOL", "02_CLASSES", "03_STUDENTS", "04_TEACHERS", "05_CLASS_TEACHERS", "06_SUBJECT_ASSIGNMENTS", "07_SUBJECTS", "08_EXAMS", "09_VALIDATION_REFERENCE"],
+  "requiredSheets": [
+    "00_START_HERE",
+    "01_SCHOOL",
+    "02_CLASSES",
+    "03_STUDENTS",
+    "04_TEACHERS",
+    "05_CLASS_TEACHERS",
+    "06_SUBJECT_ASSIGNMENTS",
+    "07_SUBJECTS",
+    "08_EXAMS",
+    "09_VALIDATION_REFERENCE"
+  ],
   "limits": {
     "compressedBytes": 8388608,
     "expandedBytes": 41943040,
@@ -23,7 +86,17 @@ var SETUP_CONTRACT_ = {
     "teachers": 300,
     "classes": 60
   },
-  "dateFields": ["start_date", "opening_date", "closing_date"]
+  "dateFields": [
+    "start_date",
+    "opening_date",
+    "closing_date"
+  ],
+  "optionalFields": {
+    "03_STUDENTS": [
+      "religion_subject",
+      "elective_subject"
+    ]
+  }
 };
 
 function setupId_(kind, key) {
@@ -58,7 +131,7 @@ function setupSnapshot_(db) {
   var tables = ['CLASSES', 'STUDENTS', 'ENROLMENTS', 'USERS', 'ASSIGNMENTS', 'SUBJECTS', 'EXAMS', 'GRADE_RULES', '_STATE'];
   return hash_(JSON.stringify(tables.map(function(t) {
     return [t, db.read(t).filter(function(r) {
-      return t !== '_STATE' || /^school-(teacher|profile|intent)/.test(r.state_id);
+      return t !== '_STATE' || /^school-(teacher|profile|intent|participation)/.test(r.state_id);
     })];
   })));
 }
@@ -138,7 +211,7 @@ function schoolPlan_(db, u, p, forCommit) {
           need_(Object.prototype.hasOwnProperty.call(r, f), 'Kolum tiada: ' + f);
         });
         need_(Object.keys(r).every(function(f) {
-          return fields[s].indexOf(f) >= 0;
+          return fields[s].indexOf(f) >= 0 || (SETUP_CONTRACT_.optionalFields[s] || []).indexOf(f) >= 0;
         }), 'Kolum tambahan tidak dibenarkan.');
         fn(r, row, seen);
       } catch (e) {
@@ -265,6 +338,35 @@ function schoolPlan_(db, u, p, forCommit) {
       status: r.enrolment_status
     }, en);
   });
+  // Participation is a year-specific setup snapshot; never inferred from name/religion.
+  var participationRows = sheets['03_STUDENTS'], participationEnabled = participationRows.some(function(raw) {
+    var r = raw.values || raw;
+    return Object.prototype.hasOwnProperty.call(r, 'religion_subject') || Object.prototype.hasOwnProperty.call(r, 'elective_subject');
+  });
+  if (participationEnabled) {
+    var selectionsByClass = Object.create(null);
+    participationRows.forEach(function(raw, i) {
+      var r = raw.values || raw, row = raw.row || i + 5;
+      if (r.student_status !== 'ACTIVE' || r.enrolment_status !== 'ACTIVE') return;
+      if (['PI','PM'].indexOf(r.religion_subject) < 0 || ['BA','BC','BT'].indexOf(r.elective_subject) < 0) {
+        error('03_STUDENTS', row, 'religion_subject/elective_subject', 'Setiap murid aktif perlu PI atau PM serta BA, BC atau BT.');
+      } else {
+        if (!selectionsByClass[r.class_id]) selectionsByClass[r.class_id] = Object.create(null);
+        selectionsByClass[r.class_id][r.student_id] = [r.religion_subject, r.elective_subject];
+      }
+    });
+    // Partition by class: even 2,000 pupils stay below the Sheets per-cell text limit.
+    var selectionStates = {'': {version: 1, classes: Object.keys(selectionsByClass).sort()}};
+    Object.keys(selectionsByClass).forEach(function(cls) { selectionStates[':' + cls] = selectionsByClass[cls]; });
+    Object.keys(selectionStates).forEach(function(suffix) {
+      var selectionKey = 'school-participation:' + year + suffix, oldSelections = db.state(selectionKey), selections = selectionStates[suffix];
+      function canonical(o) { return JSON.stringify(Object.keys(o || {}).sort().map(function(id) { return [id, o[id]]; })); }
+      if (canonical(oldSelections) !== canonical(selections)) {
+        if (prepared) error('03_STUDENTS', 4, 'religion_subject/elective_subject', 'Pilihan subjek peperiksaan yang sudah disediakan dikunci. Semakan pentadbir diperlukan.');
+        else changes.push({state: selectionKey, value: selections});
+      }
+    });
+  }
   var identities = Object.create(null);
   rows('04_TEACHERS', function(r, row, seen) {
     identifier(r.teacher_ref);
@@ -631,7 +733,8 @@ function schoolReadiness_(db, u) {
     academic_year: year,
     ready: !missing.length,
     classes: classes.length,
-    students: db.read('STUDENTS').length,
+    students: db.read('STUDENTS').filter(function(s) { return s.student_status === 'ACTIVE'; }).length,
+    total_students: db.read('STUDENTS').length,
     active_enrolments: enrol.length,
     teachers: teachers.length,
     pending_activation: pending.map(function(t) {

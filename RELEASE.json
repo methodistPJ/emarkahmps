@@ -21,5 +21,5 @@
   "live_verification": "Version 5 deployed on existing URL; real-school import blocked by teacher identifiers. Synthetic browser tests cover filtered entry/save/submit and template preview.",
   "ui_revision": "subject-participation-indexed-entry",
   "participation_revision": "optional-student-fields-v1",
-  "verification": "Core suites plus nine participation/index/cache tests; synthetic browser entry/save/submit and template import preview; real-school import pending valid teacher identifiers."
+  "verification": "Core suites plus ten participation/index/cache tests; synthetic browser entry/save/submit and template import preview; real-school import pending valid teacher identifiers."
 }

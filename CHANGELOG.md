@@ -5,7 +5,7 @@
 - Selected optional subjects start EMPTY. Other optional subjects remain TB in class review, results and PDFs, and are excluded from teacher entry and submission. Server validation blocks writes to non-participants.
 - Read contiguous per-subject mark blocks for newly prepared exams, falling back safely for existing exams. Cache immutable grade versions and frozen subject snapshots for up to ten minutes; keep marks, access, sessions and exam status fresh.
 - Drain autosave queues in batches of at most 60 while retaining pending edits and the original retry receipts. Zero-participant optional subjects are satisfied during preparation rather than blocking class completion.
-- Core regression suites and nine participation/index/cache cases passed with service doubles. Actual browser UI verified synthetic login, filtered entry, saved grade, submission locking and extended-template import preview. School setup Sheet updated separately; production school data was not imported.
+- Core regression suites and ten participation/index/cache cases passed with service doubles. Actual browser UI verified synthetic login, filtered entry, saved grade, submission locking and extended-template import preview. School setup Sheet updated separately; production school data was not imported.
 
 ## 2026-10-22 — Task-first workspace
 

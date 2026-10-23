@@ -88,5 +88,11 @@
     "start_date",
     "opening_date",
     "closing_date"
-  ]
+  ],
+  "optionalFields": {
+    "03_STUDENTS": [
+      "religion_subject",
+      "elective_subject"
+    ]
+  }
 }

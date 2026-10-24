@@ -371,7 +371,7 @@ function schoolPlan_(db, u, p, forCommit) {
   rows('04_TEACHERS', function(r, row, seen) {
     identifier(r.teacher_ref);
     unique(seen, r.teacher_ref);
-    need_(typeof r.identification_code === 'string' && /^\d{6}$/.test(r.identification_code), 'identification_code mesti teks enam digit termasuk sifar awal.');
+    need_(typeof r.identification_code === 'string' && validLoginCode_(r.identification_code), 'identification_code mesti kod guru huruf besar 2–30 aksara (contoh AHMAD), atau teks enam digit untuk akaun lama.');
     need_(typeof r.account_alias === 'string' && /^[a-z0-9_-]{0,30}$/.test(r.account_alias), 'Alias tidak sah.');
     var idkey = key_([r.identification_code, r.account_alias]);
     unique(identities, idkey);

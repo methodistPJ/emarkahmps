@@ -1,10 +1,14 @@
 /* Browser PBKDF2-SHA256(600000) + server HMAC pepper. Derived key is a credential. */
+function validLoginCode_(code) {
+  return /^(?:[0-9]{6}|[A-Z][A-Z0-9_-]{1,29})$/.test(code);
+}
 function authSalt_(code, alias) {
-  return hmac_('salt:' + code + ':' + alias);
+  return hmac_('salt:' + String(code).trim().toUpperCase() + ':' + alias);
 }
 
 function authTarget_(p) {
-  need_(/^\d{6}$/.test(String(p.code || '')), 'Masukkan enam digit pengenalan.');
+  p.code = String(p.code || '').trim().toUpperCase();
+  need_(validLoginCode_(p.code), 'Masukkan kod guru yang diberikan pentadbir.');
   need_(/^[a-z0-9_-]{0,30}$/.test(p.alias || ''), 'Alias akaun tidak sah.');
   return key_([p.code, p.alias || '']);
 }
@@ -112,8 +116,8 @@ function userSave_(db, u, p, req) {
       created_at: now_()
     };
   r.full_name = text_(p.full_name, 120);
-  r.identification_code = String(p.identification_code);
-  need_(/^\d{6}$/.test(r.identification_code), 'Kod mesti enam digit.');
+  r.identification_code = String(p.identification_code).trim().toUpperCase();
+  need_(validLoginCode_(r.identification_code), 'Kod guru mesti 2–30 aksara huruf/angka, _ atau -, atau enam digit untuk akaun lama.');
   r.account_alias = String(p.account_alias || '');
   need_(/^[a-z0-9_-]{0,30}$/.test(r.account_alias), 'Alias tidak sah.');
   need_(!db.read('USERS').some(function(x) {

@@ -2,7 +2,7 @@
 
 ## Pentadbir
 
-Import guru baharu melalui workbook. Kod pengenalan kekal enam digit teks, termasuk sifar awal; alias membezakan akaun berkod sama. Jangan mengubah akaun sedia ada untuk memaksa mereka mengaktifkan semula. PIN peribadi mereka kekal.
+Import guru baharu melalui workbook. Kod guru menggunakan singkatan nama unik seperti AHMAD atau CHONGFL. Kod angka enam digit akaun lama masih disokong; alias hanya jika kod bertindih. Jangan mengubah akaun sedia ada untuk memaksa mereka mengaktifkan semula. PIN peribadi mereka kekal.
 
 Pentadbiran → Import → Readiness → Akaun Menunggu Pengaktifan. Sahkan identiti setiap guru melalui rekod sekolah/semakan bersemuka. Pilih1–30 akaun pending dan tekan Keluarkan / Keluarkan Semula Kod Terpilih. Kod berbeza untuk setiap guru, dipaparkan sekali sahaja dan luput48 jam. Edarkan secara peribadi bersama kod pengenalan/alias melalui kaedah sekolah yang diluluskan. Jangan kongsi seluruh skrin senarai kod, menampal kod dalam workbook, kumpulan awam atau log.
 
@@ -13,7 +13,7 @@ Hanya akaun pending boleh menerima kod. Akaun yang sudah menetapkan PIN tidak bo
 ## Guru
 
 1. Buka workspace rasmi dan pilih Guru baharu: Aktifkan Akaun.
-2. Masukkan enam digit pengenalan, alias jika diberikan dan PIN sementara BBB8307.
+2. Masukkan kod guru, alias jika diberikan dan PIN sementara BBB8307.
 3. Masukkan kod pengaktifan individu24 aksara daripada pentadbir. PIN bersama sahaja tidak cukup untuk mengambil alih akaun.
 4. Selepas disahkan, tetapkan PIN individu10–64 aksara dan sahkan nilai yang sama. Capability ini luput10 minit; tiada akses markah/analitik diberikan pada peringkat ini.
 5. Selepas simpanan berjaya, credential sementara, kod/tiket dan sesi lama dibatalkan melalui auth_version. Sistem log masuk menggunakan PIN individu dan membuka workspace.

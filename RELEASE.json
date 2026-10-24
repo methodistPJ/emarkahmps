@@ -1,6 +1,6 @@
 {
   "version": "1.0.3-rc.1",
-  "date": "2026-10-24",
+  "date": "2026-10-25",
   "status": "release-candidate-staging-acceptance-required",
   "baseline": "latest workspace v1.0.2 Release Candidate",
   "baseline_checksums_file_sha256": "26a2ddb04c6eaed7a7827c80df62da818a6057023786f49593b4425bb2afb9cb",
@@ -15,11 +15,12 @@
     "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e"
   },
   "rollback_warning": "Suspend all pending accounts before reverting to v1.0.2 auth.",
-  "production_deployment_date": "2026-10-24",
-  "apps_script_version": 5,
-  "previous_apps_script_version": 4,
+  "production_deployment_date": "2026-10-25",
+  "apps_script_version": 6,
+  "previous_apps_script_version": 5,
   "live_verification": "Version 5 deployed on existing URL; real-school import blocked by teacher identifiers. Synthetic browser tests cover filtered entry/save/submit and template preview.",
-  "ui_revision": "subject-participation-indexed-entry",
+  "ui_revision": "teacher-name-codes",
   "participation_revision": "optional-student-fields-v1",
-  "verification": "Core suites plus ten participation/index/cache tests; synthetic browser entry/save/submit and template import preview; real-school import pending valid teacher identifiers."
+  "verification": "Core suites, four name-code authentication/import cases and synthetic browser login pass; complete school setup validation has zero errors and warnings. Real-school import remains an explicit separate step.",
+  "teacher_identifier_revision": "name-code-v1-legacy-six-digit-compatible"
 }

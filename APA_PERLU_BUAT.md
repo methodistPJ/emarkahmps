@@ -7,7 +7,7 @@ Guru tidak perlu mendaftar murid, guru atau kelas satu demi satu dalam Web App.
 1. Log masuk Web App sebagai pentadbir. Pada halaman utama, pilih **Muat Turun Templat Nama Murid & Guru**.
 2. Gantikan baris DEMO dalam fail Excel; kekalkan nama tab dan header baris 4. Data bermula pada baris 5.
 3. Isi **02_CLASSES** (kelas), **03_STUDENTS** (murid dan kelas), **04_TEACHERS** (guru), **05_CLASS_TEACHERS** (guru kelas) dan **06_SUBJECT_ASSIGNMENTS** (guru-subjek-kelas). Semak profil sekolah di 01_SCHOOL dan tarikh UPSA/UASA di 08_EXAMS. Kekalkan rujukan subjek pada 07_SUBJECTS.
-4. Gunakan class_id dan teacher_ref yang sama merentas tab. Simpan kod pengenalan enam digit serta student_id sebagai teks supaya sifar di depan kekal.
+4. Gunakan class_id dan teacher_ref yang sama merentas tab. Simpan kod guru (contoh AHMAD) serta student_id sebagai teks. Kod angka enam digit akaun lama masih disokong tanpa kehilangan sifar awal.
 5. Pada Web App, pilih **Isi / Import Data Sekolah** → pilih satu fail .xlsx → semak ralat dan pratonton → sahkan import. Sistem menyediakan murid, guru dan tugasan secara pukal. Tiada pendaftaran satu demi satu diperlukan.
 6. Semak kelengkapan, pengaktifan guru dan tarikh peperiksaan. Pilih **Sediakan & Buka Selepas Semakan** untuk peperiksaan yang telah bersedia.
 

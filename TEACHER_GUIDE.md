@@ -2,7 +2,7 @@
 
 Guru baharu: ikuti [panduan pengaktifan](TEACHER_ONBOARDING_GUIDE.md). Akaun sedia ada terus menggunakan PIN individu; jangan gunakan BBB8307 untuk akaun yang sudah aktif.
 
-Log masuk melalui workspace rasmi menggunakan enam digit pengenalan (termasuk sifar awal), alias jika diberikan dan PIN individu. Pilih tugasan kelas/subjek yang betul.
+Log masuk melalui workspace rasmi menggunakan kod guru (contoh AHMAD; kod angka akaun lama juga disokong), alias jika diberikan dan PIN individu. Pilih tugasan kelas/subjek yang betul.
 
 ## Isi dan simpan markah
 

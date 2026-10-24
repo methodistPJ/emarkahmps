@@ -61,3 +61,8 @@ These tests establish local behaviour, not live quotas/latency/permissions/lock 
 Core suites pass, including ten new participation/index/cache tests and an autosave queue of 125 changes drained as 60/60/5. A local browser using the actual bundled UI and backend service doubles verified synthetic teacher login, one eligible PI pupil, autosave of 87/A (version 2), preservation of the other pupil's TB (version 1), successful submit/locking, and extended-template import preview. A new subject read fetched 2 fixture rows rather than the class's complete 28-mark block. This is structural and synthetic evidence, not a measured live latency guarantee. No school marks were entered during testing.
 
 School setup changes were verified separately by export/readback. Real import still requires valid teacher identification codes. Existing prepared exams retain legacy participation until explicitly reviewed; this release does not rewrite their marks or cohorts.
+
+
+## 24 October 2026: teacher name codes
+
+All core suites and four new name-code authentication/import tests pass. Numeric legacy codes are retained; name codes are normalized before salt derivation, challenge, rate limiting, login and activation. Synthetic browser login with lowercase `gurudemo`, no alias and its existing PIN reached the teacher task screen without console warnings/errors. Complete school workbook relationship validation passed with its actual name codes (no placeholder identifiers). No production accounts were imported or existing PINs changed.

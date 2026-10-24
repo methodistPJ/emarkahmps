@@ -1,3 +1,10 @@
+## 2026-10-25 — Short teacher-name login codes
+
+- Allow canonical uppercase 2–30 character teacher codes (AHMAD, CHONGFL, etc.) while preserving six-digit legacy accounts, salts and existing PINs.
+- Normalize case before challenge, authentication and activation; share rate limits across spelling cases. Update login, activation and admin labels/input limits.
+- School import accepts name codes, with stable teacher_ref assignment linking. Unique name codes do not require an alias. Individual activation, PIN policy and session authorization remain unchanged.
+- Four dedicated authentication/import regressions plus all core suites pass. Synthetic browser login succeeds using lowercase name code with no alias. No production school accounts were imported or reset.
+
 ## 2026-10-24 — Student subject participation and faster entry
 
 - Add optional paired religion_subject (PI/PM) and elective_subject (BA/BC/BT) columns to student setup, with strict active-pupil validation. Legacy six-column imports remain supported.

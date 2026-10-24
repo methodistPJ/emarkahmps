@@ -118,7 +118,7 @@
         document.querySelector('#login-status').textContent =
           'Mengesahkan…';
 
-        const code = f.get('code');
+        const code = String(f.get('code')).trim().toUpperCase();
         const alias = f.get('alias').trim().toLowerCase();
 
         // Step 1: Get authentication challenge.
@@ -215,7 +215,7 @@
     login.hidden = false;
     document.querySelector('#static-access').hidden = true;
     document.querySelector('#hosting-note').textContent =
-      'Enam digit pengenalan mengenal pasti akaun. PIN individu mengesahkan akses anda.';
+      'Kod guru mengenal pasti akaun. PIN individu mengesahkan akses anda.';
     document.querySelector('#workspace-link').href = '#access';
     M.call('public').then(p => {
       document.querySelector('#public-numbers').innerHTML = [

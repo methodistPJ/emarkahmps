@@ -64,7 +64,7 @@
         }
         stage(4);
         status('Validasi selesai. Pratonton sah selama 15 minit; perubahan database akan memerlukan validasi semula.');
-        section.querySelector('#setup-preview').innerHTML = '<h4>Pratonton Perubahan</h4>' + countTable(preview.counts) + `<p>${preview.newTeachers.length} akaun baharu memerlukan kod pengaktifan individu. PIN akaun sedia ada dikekalkan.</p><details><summary>${preview.change_count} perubahan dirancang (100 pertama)</summary><pre>${M.esc(JSON.stringify(preview.changes,null,2))}</pre></details><label><input id="setup-confirm-check" type="checkbox"> Saya telah mengganti/menyemak semua data contoh dan meluluskan perubahan ini.</label><button id="setup-commit">Sahkan Persediaan Sekolah</button>`;
+        section.querySelector('#setup-preview').innerHTML = '<h4>Pratonton Perubahan</h4>' + countTable(preview.counts) + `<p>${preview.newTeachers.length} akaun baharu memerlukan kod pengaktifan individu. PIN akaun sedia ada dikekalkan. Kod guru ialah singkatan nama dalam identification_code; jangan isi PIN di situ.</p><details><summary>${preview.change_count} perubahan dirancang (100 pertama)</summary><pre>${M.esc(JSON.stringify(preview.changes,null,2))}</pre></details><label><input id="setup-confirm-check" type="checkbox"> Saya telah mengganti/menyemak semua data contoh dan meluluskan perubahan ini.</label><button id="setup-commit">Sahkan Persediaan Sekolah</button>`;
         section.querySelector('#setup-commit').onclick = () => M.run(commit);
       } catch (e) {
         issues(e.issues || []);

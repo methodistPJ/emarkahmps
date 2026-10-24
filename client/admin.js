@@ -47,7 +47,7 @@
     USERS: [
       ['user_id', 'ID akaun (kosong untuk baharu)'],
       ['full_name', 'Nama guru'],
-      ['identification_code', 'Enam digit pengenalan'],
+      ['identification_code', 'Kod guru / kod akaun lama'],
       ['account_alias', 'Alias unik jika pengenalan bertindih'],
       ['pin', 'PIN baharu (10–64 aksara; kosong untuk kekalkan)', 'password'],
       ['active', 'Aktif', 'checkbox'],

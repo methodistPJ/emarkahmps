@@ -146,3 +146,14 @@ function role_(u, r) {
 function admin_(u) {
   if (!role_(u, 'ADMINISTRATOR')) fail_('FORBIDDEN', 'Akses pentadbir diperlukan.');
 }
+
+// RPC maps may arrive in different key orders. Arrays remain order-sensitive.
+function canonicalJson_(value) {
+  return JSON.stringify(value, function(key, item) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return item;
+    var sorted = Object.create(null);
+    Object.keys(item).sort().forEach(function(k) { sorted[k] = item[k]; });
+    return sorted;
+  });
+}
+function payloadFingerprint_(payload) { return 'canonical-v1:' + hash_(canonicalJson_(payload)); }

@@ -593,7 +593,7 @@ function schoolPreview_(db, u, p, req) {
   var before = setupSnapshot_(db),
     plan = schoolPlan_(db, u, p, false),
     ticket = id_(),
-    hash = hash_(JSON.stringify(p.document));
+    hash = hash_(canonicalJson_(p.document));
   var preview = {
     actor: u.user_id,
     document_hash: hash,
@@ -617,7 +617,7 @@ function schoolCommit_(db, u, p, req) {
   need_(p.confirmed === true, 'Pengesahan pentadbir diperlukan.');
   var preview = db.state('school-preview:' + p.preview_id);
   need_(preview && preview.actor === u.user_id && preview.expires > Date.now(), 'Pratonton tamat tempoh. Validasi semula.');
-  need_(preview.document_hash === hash_(JSON.stringify(p.document)), 'Workbook berubah selepas pratonton.');
+  need_(preview.document_hash === hash_(canonicalJson_(p.document)), 'Workbook berubah selepas pratonton.');
   need_(preview.snapshot === setupSnapshot_(db), 'Data berubah selepas pratonton. Validasi semula; tiada data ditulis.');
   var plan = schoolPlan_(db, u, p, true);
   need_(!plan.errors.length, 'Validasi import gagal.', plan.errors);
@@ -778,7 +778,7 @@ function schoolPrepare_(db, u, p, req) {
 function schoolPreviewDetails_(db, u, p) {
   admin_(u);
   var ticket = db.state('school-preview:' + p.preview_id);
-  need_(ticket && ticket.actor === u.user_id && ticket.expires > Date.now() && ticket.document_hash === hash_(JSON.stringify(p.document)), 'Pratonton tidak sah/tamat tempoh.');
+  need_(ticket && ticket.actor === u.user_id && ticket.expires > Date.now() && ticket.document_hash === hash_(canonicalJson_(p.document)), 'Pratonton tidak sah/tamat tempoh.');
   need_(ticket.snapshot === setupSnapshot_(db), 'Data berubah. Validasi semula.');
   var plan = schoolPlan_(db, u, p, false);
   return {

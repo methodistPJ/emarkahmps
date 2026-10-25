@@ -283,7 +283,7 @@ function locked_(fn) {
 function commit_(db, req, u, payload, result) {
   var transactionStart = Date.now();
   var s = db.sheet('_OPS'),
-    fingerprint = hash_(JSON.stringify(payload)),
+    fingerprint = payloadFingerprint_(payload),
     plans = Object.keys(db.staged).map(function(k) {
       return db.staged[k];
     }),
@@ -341,7 +341,7 @@ function replay_(db, req, u, payload) {
     for (var i = 0; i < matches.length && !match; i++) match = check(matches[i].getRow());
   }
   if (!match) return null;
-  need_(match.data[3] === hash_(JSON.stringify(payload)), 'Request ID telah digunakan untuk permintaan lain.');
+  need_(match.data[3] === payloadFingerprint_(payload) || match.data[3] === hash_(JSON.stringify(payload)), 'Request ID telah digunakan untuk permintaan lain.');
   rememberOp_(db, req, u.user_id, match.row);
   return {
     found: true,

@@ -1,7 +1,7 @@
 (function(M) {
   M.openSchoolImport = async legacy => {
     const section = document.querySelector('#admin-section');
-    section.innerHTML = `<section class="setup-wizard"><p class="eyebrow">SCHOOL SETUP</p><h3>Satu Workbook. Persediaan Sekolah.</h3><p>Lengkapkan sekolah, kelas, murid, guru, tugasan, subjek dan exam dalam satu Excel. Ganti semua baris contoh sebelum import sebenar. Dalam 03_STUDENTS, isi religion_subject (PI/PM) dan elective_subject (BA/BC/BT) untuk setiap murid aktif. Guru hanya melihat murid yang mengambil subjek mereka.</p><ol class="setup-steps">${['Muat turun','Upload Excel','Validasi','Pratonton','Sahkan','Selesai'].map((s,i)=>`<li data-setup-step="${i+1}">${i+1}. ${s}</li>`).join('')}</ol><div class="toolbar"><button id="setup-download">Muat Turun Template Excel</button><button id="legacy-import" class="secondary">Import CSV / Sejarah Lama</button></div><label id="setup-drop" class="setup-drop">Pilih atau seret satu fail .xlsx (maksimum 8MB)<input id="setup-file" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></label><p id="setup-status" role="status" aria-live="polite">Sedia untuk workbook.</p><div id="setup-issues"></div><div id="setup-preview"></div><div id="setup-result"></div><div id="setup-readiness"></div></section>`;
+    section.innerHTML = `<section class="setup-wizard"><p class="eyebrow">SCHOOL SETUP</p><h3>Satu Workbook. Persediaan Sekolah.</h3><p>Lengkapkan sekolah, kelas, murid, guru, tugasan, subjek dan exam dalam satu Excel. Ganti semua baris contoh sebelum import sebenar. Dalam 03_STUDENTS, isi religion_subject (PI/PM) dan elective_subject (BA/BC/BT) untuk setiap murid aktif. Guru hanya melihat murid yang mengambil subjek mereka.</p><ol class="setup-steps">${['Muat turun','Upload Excel','Validasi','Pratonton','Sahkan','Selesai'].map((s,i)=>`<li data-setup-step="${i+1}">${i+1}. ${s}</li>`).join('')}</ol><div class="toolbar"><button id="setup-download">Muat Turun Template Excel</button><button id="legacy-import" class="secondary">Import CSV / Sejarah Lama</button><button id="setup-revalidate" class="secondary" disabled>Validasi Semula Fail Dipilih</button></div><label id="setup-drop" class="setup-drop">Pilih atau seret satu fail .xlsx (maksimum 8MB)<input id="setup-file" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></label><p id="setup-status" role="status" aria-live="polite">Sedia untuk workbook.</p><div id="setup-issues"></div><div id="setup-preview"></div><div id="setup-result"></div><div id="setup-readiness"></div></section>`;
     let documentData = null,
       preview = null,
       commitId = null,
@@ -129,7 +129,15 @@
       if (M.schoolBusy) return;
       legacy();
     };
-    section.querySelector('#setup-file').onchange = e => M.run(() => load(e.target.files[0]));
+    section.querySelector('#setup-file').onchange = e => {
+      section.querySelector('#setup-revalidate').disabled = !e.target.files[0];
+      if (e.target.files[0]) M.run(() => load(e.target.files[0]));
+    };
+    section.querySelector('#setup-revalidate').onclick = () => {
+      const file = section.querySelector('#setup-file').files[0];
+      if (file) M.run(() => load(file));
+      else status('Pilih fail .xlsx dahulu.');
+    };
     const drop = section.querySelector('#setup-drop');
     drop.ondragover = e => {
       e.preventDefault();

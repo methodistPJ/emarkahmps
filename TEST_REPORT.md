@@ -66,3 +66,8 @@ School setup changes were verified separately by export/readback. Real import st
 ## 24 October 2026: teacher name codes
 
 All core suites and four new name-code authentication/import tests pass. Numeric legacy codes are retained; name codes are normalized before salt derivation, challenge, rate limiting, login and activation. Synthetic browser login with lowercase `gurudemo`, no alias and its existing PIN reached the teacher task screen without console warnings/errors. Complete school workbook relationship validation passed with its actual name codes (no placeholder identifiers). No production accounts were imported or existing PINs changed.
+
+
+## 25 October 2026: RPC map ordering
+
+A live import exposed a transport difference not represented by the original service doubles: identical uploaded data produced different raw JSON hashes in separate Apps Script requests. Canonical hashing now sorts object keys recursively while retaining array order. Five new regressions cover preview/details and confirmed commit across reordered RPC maps, changed content, actor and expiry checks, repeat mutation receipts and legacy compatibility. All core suites pass. The actual school import will be verified separately before reporting completion.

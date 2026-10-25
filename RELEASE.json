@@ -16,11 +16,11 @@
   },
   "rollback_warning": "Suspend all pending accounts before reverting to v1.0.2 auth.",
   "production_deployment_date": "2026-10-25",
-  "apps_script_version": 6,
-  "previous_apps_script_version": 5,
+  "apps_script_version": 7,
+  "previous_apps_script_version": 6,
   "live_verification": "Version 5 deployed on existing URL; real-school import blocked by teacher identifiers. Synthetic browser tests cover filtered entry/save/submit and template preview.",
-  "ui_revision": "teacher-name-codes",
+  "ui_revision": "stable-import-preview-revalidation",
   "participation_revision": "optional-student-fields-v1",
-  "verification": "Core suites, four name-code authentication/import cases and synthetic browser login pass; complete school setup validation has zero errors and warnings. Real-school import remains an explicit separate step.",
+  "verification": "Core suites plus five canonical RPC/import regressions passed. Live school import pending revalidation.",
   "teacher_identifier_revision": "name-code-v1-legacy-six-digit-compatible"
 }

@@ -1,3 +1,10 @@
+## 2026-10-25 — Stable import preview and RPC retries
+
+- Canonicalize object keys when hashing import workbooks and mutation payloads; preserve array order. Google Apps Script RPC transport can reorder map keys between requests, which previously invalidated otherwise identical previews.
+- Keep actor, content, expiry and database-snapshot checks. Continue accepting legacy journal fingerprints only when the original raw payload matches.
+- Add a visible revalidation control for the currently selected file, without reselecting it after a validation error or expiry.
+- All core suites and five canonicalization regressions pass, including reordered preview/commit, changed-content rejection, actor/expiry protection, reordered mutation retries and legacy receipt compatibility.
+
 ## 2026-10-25 — Short teacher-name login codes
 
 - Allow canonical uppercase 2–30 character teacher codes (AHMAD, CHONGFL, etc.) while preserving six-digit legacy accounts, salts and existing PINs.

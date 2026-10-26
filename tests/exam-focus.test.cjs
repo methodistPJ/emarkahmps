@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const c={config_:()=>({year:'2026'}),role_:(u,r)=>u.roles.includes(r),admin_:u=>{if(!u.roles.includes('ADMINISTRATOR'))throw Error('admin');},need_:(v,m)=>{if(!v)throw Error(m)},audit_:()=>{},publicUser_:u=>u,bool_:Boolean,assignments_:()=>[]};
+vm.createContext(c);for(const f of ['Views','Marks','Admin'])vm.runInContext(fs.readFileSync(__dirname+'/../src/'+f+'.js','utf8'),c);
+const exams=[{exam_id:'P',exam_type:'UPSA',academic_year:2026,status:'OPEN'},{exam_id:'A',exam_type:'UASA',academic_year:2026,status:'DRAFT'},{exam_id:'OLD',exam_type:'UASA',academic_year:2025,status:'FINALIZED'}];
+let focus=null;const reads=[];const db={state:()=>focus,setState:(k,v)=>focus=v,read:t=>{reads.push(t);return t==='EXAMS'?exams:[]}};
+const teacher={roles:['SUBJECT_TEACHER']},admin={roles:['ADMINISTRATOR']};
+assert.equal(c.visibleExams_(db,teacher).map(e=>e.exam_id).join(','),'A');
+assert.equal(c.sessionContext_(db,teacher).exams.map(e=>e.exam_id).join(','),'A');
+assert.equal(c.dashboard_(db,teacher).exams.map(e=>e.exam_id).join(','),'A');
+assert.equal(c.visibleExams_(db,admin).length,2);
+assert.throws(()=>c.teacherExamFocusSave_(db,teacher,{exam_type:'UPSA'},'x'),/admin/);
+assert.throws(()=>c.teacherExamFocusSave_(db,admin,{exam_type:'INVALID'},'x'));
+c.teacherExamFocusSave_(db,admin,{exam_type:'UPSA'},'x');assert.equal(c.visibleExams_(db,teacher)[0].exam_id,'P');
+c.teacherExamFocusSave_(db,admin,{exam_type:'ALL'},'x');assert.equal(c.visibleExams_(db,teacher).length,2);
+assert.equal(exams[1].status,'DRAFT');assert.ok(!reads.includes('MARKS'));
+console.log('PASS teacher exam focus: default UASA, dashboard/context filter, admin history, permission, switching, unchanged exam state.');

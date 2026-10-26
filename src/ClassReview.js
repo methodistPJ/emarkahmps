@@ -1,3 +1,22 @@
+function classSubmissionGate_(db, e, c) {
+  var cls = class_(db, c), subjects = subjectsExam_(db, e, cls.year_level);
+  var missing = subjects.filter(function(sub) {
+    var r = submission_(db, e, c, sub.subject_code);
+    return !r || ['SUBMITTED', 'AMENDED'].indexOf(r.submission_status) < 0 || !bool_(r.tb_acknowledged);
+  }).map(function(sub) { return sub.subject_code; });
+  return {ready: subjects.length > 0 && missing.length === 0, missing: missing};
+}
+function requireClassSubmissions_(db, e, c) {
+  var gate = classSubmissionGate_(db, e, c);
+  need_(gate.ready, 'Semua guru subjek mesti selesai mengisi dan menghantar dahulu. Belum dihantar: ' + gate.missing.join(', '));
+}
+function verificationView_(db, e, c) {
+  var m = metadata_(db, e, c), previous = db.state('class-verification:' + key_([e, c]));
+  var id = m && m.finalized_at ? m.finalized_by : previous && previous.user_id;
+  var user = id && db.find('USERS', 'user_id', id);
+  return {confirmed: !!(m && m.finalized_at), name: user ? user.full_name : previous && previous.name || '', at: m && m.finalized_at || previous && previous.at || '', pending: !!(previous && !(m && m.finalized_at))};
+}
+
 function reviewGet_(db, u, p) {
   readable_(db, u, p.exam_id, p.class_id);
   var c = class_(db, p.class_id),
@@ -12,11 +31,17 @@ function reviewGet_(db, u, p) {
     marks: rows,
     rules: rules_(db, exam_(db, p.exam_id).grading_version),
     subjects: subjects,
+    subject_teachers: subjects.map(function(sub) {
+      var users = db.read('USERS');
+      return {subject_code: sub.subject_code, names: db.read('ASSIGNMENTS').filter(function(a) {return a.class_id === p.class_id && String(a.academic_year) === String(exam_(db,p.exam_id).academic_year) && a.subject_code === sub.subject_code && a.assignment_type === 'SUBJECT_TEACHER' && bool_(a.active);}).map(function(a) {var u=users.find(function(x){return x.user_id===a.user_id;});return u?u.full_name:'';}).filter(Boolean)};
+    }),
     reviews: reviews,
     submissions: db.read('SUBMISSIONS').filter(function(s) {
       return s.exam_id === p.exam_id && s.class_id === p.class_id;
     }),
-    editable: canClass_(db, u, p.exam_id, p.class_id),
+    editable: canClass_(db, u, p.exam_id, p.class_id) && classSubmissionGate_(db, p.exam_id, p.class_id).ready,
+    gate: classSubmissionGate_(db, p.exam_id, p.class_id),
+    verification: verificationView_(db, p.exam_id, p.class_id),
     readiness: readiness_(db, p.exam_id, p.class_id),
     job: jobView_(db,p.exam_id,p.class_id)
   };
@@ -25,6 +50,7 @@ function reviewGet_(db, u, p) {
 function remarkSave_(db, u, p, req) {
   need_(canClass_(db, u, p.exam_id, p.class_id), 'Akses guru kelas diperlukan.');
   writable_(db, p.exam_id, p.class_id);
+  requireClassSubmissions_(db, p.exam_id, p.class_id);
   need_(Array.isArray(p.changes) && p.changes.length > 0 && p.changes.length <= 100,
     'Kelompok ulasan tidak sah.');
   var all = db.read('CLASS_REVIEWS'),
@@ -122,11 +148,15 @@ function finalize_(db, u, p, req) {
   var ex = exam_(db, p.exam_id),
     m = metadata_(db, p.exam_id, p.class_id);
   need_(ex.status === 'OPEN' || ex.status === 'CLOSED', 'Peperiksaan tidak boleh dimuktamadkan.');
-  need_(m && !m.finalized_at, 'Kelas telah dimuktamadkan atau belum disediakan.');
+  need_(m, 'Kelas belum disediakan.');
   var ready = readiness_(db, p.exam_id, p.class_id);
   need_(ready.ready, 'Penghantaran, markah atau ulasan belum lengkap.');
   need_(p.revisionHash === ready.revisionHash, 'Rekod berubah. Semak pengesahan semula.');
   need_(p.confirmed === true, 'Pengesahan seluruh kelas diperlukan.');
+  if (m.finalized_at) {
+    audit_(db, u, req, 'CLASS_RECONFIRM', 'CLASS_REVIEWS', m.review_id, null, {revision: m.class_finalization_revision}, 'Semakan semula keputusan yang telah disahkan; tiada perubahan markah atau PDF');
+    return {revision: m.class_finalization_revision, pdf_status: m.pdf_status};
+  }
   var marks = db.marks(p.exam_id, p.class_id),
     cls = class_(db, p.class_id),
     rules = rules_(db, ex.grading_version),
@@ -183,6 +213,7 @@ function finalize_(db, u, p, req) {
     fingerprint: snapshotFingerprint_(db.read('CLASS_REVIEWS').filter(function(r){return r.record_type==='STUDENT'&&r.exam_id===p.exam_id&&r.class_id===p.class_id;}).map(function(r){return [r.student_id,r.result_snapshot];}))
   });
   db.put('CLASS_REVIEWS', m);
+  db.setState('class-verification:' + key_([p.exam_id, p.class_id]), {user_id: u.user_id, name: u.full_name, at: m.finalized_at});
   audit_(db, u, req, 'CLASS_FINALIZE', 'CLASS_REVIEWS', m.review_id, before, m, 'Seluruh kelas disahkan');
   return {
     revision: rev,
@@ -209,6 +240,7 @@ function reopen_(db, u, p, req) {
   }
   need_(m.finalized_at, 'Kelas belum dimuktamadkan.');
   var before = Object.assign({}, m);
+  db.setState('class-verification:' + key_([p.exam_id, p.class_id]), {user_id: m.finalized_by, name: (db.find('USERS', 'user_id', m.finalized_by) || {}).full_name || '', at: m.finalized_at});
   m.finalized_at = '';
   m.pdf_status = 'OUTDATED';
   m.job_lease = '';

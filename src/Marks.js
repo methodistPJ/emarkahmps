@@ -20,8 +20,10 @@ function dashboard_(db, u) {
       tasks.push({
         exam: examView_(e),
         class: c,
+        gate: !a.subject_code ? classSubmissionGate_(db, e.exam_id, c.class_id) : null,
+        submissions: !a.subject_code ? db.read('SUBMISSIONS').filter(function(s) { return s.exam_id === e.exam_id && s.class_id === c.class_id; }).map(function(s) { return {subject_code:s.subject_code, status:s.submission_status}; }) : [],
         assignment: a,
-        stats: statistics_(marks),
+        stats: statistics_(marks.filter(function(r) { return !(r.mark_status === 'TB' && bool_(r.default_tb)); })),
         submission: a.subject_code ? submission_(db, e.exam_id, c.class_id, a.subject_code) :
           null,
         metadata: m ? {
@@ -36,6 +38,7 @@ function dashboard_(db, u) {
   });
   return {
     user: publicUser_(u),
+    teacher_exam_focus: teacherExamFocus_(db),
     tasks: tasks,
     exams: exams.map(examView_)
   };
@@ -49,6 +52,7 @@ function marksGet_(db, u, p) {
     rules: rules_(db, exam_(db, p.exam_id).grading_version),
     subjects: subjectsExam_(db, p.exam_id, c.year_level),
     submission: p.subject_code ? submission_(db, p.exam_id, p.class_id, p.subject_code) : null,
+    verification: verificationView_(db, p.exam_id, p.class_id),
     metadata: metadata_(db, p.exam_id, p.class_id)
   };
 }
@@ -62,6 +66,7 @@ function saveMarks_(db, u, p, req) {
     rules = rules_(db, exam_(db, p.exam_id).grading_version),
     seen = {},
     updates = [];
+  if (classTeacher) requireClassSubmissions_(db, p.exam_id, p.class_id);
   p.changes.forEach(function(change) {
     need_(!seen[change.mark_id], 'Markah berulang dalam permintaan.');
     seen[change.mark_id] = true;
@@ -127,11 +132,12 @@ function saveMarks_(db, u, p, req) {
 function submit_(db, u, p, req) {
   need_(canSubject_(db, u, p.exam_id, p.class_id, p.subject_code),
     'Hanya guru subjek ditugaskan boleh menghantar.');
-  writable_(db, p.exam_id, p.class_id);
+  var existingSubmission = submission_(db, p.exam_id, p.class_id, p.subject_code);
+  if (!existingSubmission || existingSubmission.submission_status === 'DRAFT') writable_(db, p.exam_id, p.class_id);
   var rows = entryMarks_(db, p.exam_id, p.class_id, p.subject_code),
     s = submission_(db, p.exam_id, p.class_id, p.subject_code);
   need_(rows.length && s, 'Subjek belum disediakan.');
-  need_(s.submission_status === 'DRAFT', 'Subjek telah dihantar.');
+  need_(['DRAFT', 'SUBMITTED', 'AMENDED'].indexOf(s.submission_status) >= 0, 'Status penghantaran tidak sah.');
   need_(rows.every(function(m) {
     return m.mark_status !== 'EMPTY';
   }), 'Markah EMPTY masih ada.');
@@ -146,6 +152,10 @@ function submit_(db, u, p, req) {
   });
   need_(JSON.stringify(p.versions) === JSON.stringify(versions),
     'Rekod berubah sejak semakan. Muat semula dahulu.');
+  if (s.submission_status !== 'DRAFT') {
+    audit_(db, u, req, 'SUBJECT_RECONFIRM', 'SUBMISSIONS', s.submission_id, null, {status: s.submission_status}, 'Semakan semula tanpa mengubah markah atau pengesahan kelas');
+    return s;
+  }
   var before = Object.assign({}, s);
   s.submission_status = 'SUBMITTED';
   s.revision = Number(s.revision || 0) + 1;

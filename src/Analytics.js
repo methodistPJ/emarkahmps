@@ -2,7 +2,7 @@ function analytics_(db, u, p) {
   need_(['CURRENT', 'OFFICIAL'].indexOf(p.mode) >= 0, 'Pilih Analisis Semasa atau Rasmi.');
   var e = exam_(db, p.exam_id),
     classes = db.read('CLASSES').filter(function(c) {
-      return String(c.academic_year) === String(e.academic_year) && (!p.class_id || c.class_id === p
+      return String(c.academic_year) === String(e.academic_year) && bool_(c.active) && (!p.class_id || c.class_id === p
         .class_id) && (!p.year_level || Number(c.year_level) === Number(p.year_level)) && (!p.stage ||
         Number(c.academic_stage) === Number(p.stage));
     }),
@@ -51,6 +51,7 @@ function analytics_(db, u, p) {
     mode: p.mode,
     exam: e,
     summary: statistics_(marks),
+    entry: statistics_(marks.filter(function(r) { return !(r.mark_status === 'TB' && bool_(r.default_tb)); })),
     subjects: Object.keys(bySubject).map(function(s) {
       return {
         subject: s,
@@ -65,9 +66,11 @@ function analytics_(db, u, p) {
         year_level: g.year_level,
         stage: g.stage,
         subject: g.subject,
+        entry: statistics_(g.rows.filter(function(r) { return !(r.mark_status === 'TB' && bool_(r.default_tb)); })),
         stats: statistics_(g.rows)
       };
     }),
+    teacher_progress: role_(u, 'ADMINISTRATOR') ? teacherProgress_(db, e, classes, marks, p) : [],
     dataset: marks.map(function(m) {
       return {
         student_id: m.student_id,
@@ -120,4 +123,22 @@ function compare_(db, u, p) {
     }, 0) / pairs.length).toFixed(2)) : null,
     note: 'Padanan student_id + subjek dengan markah angka dalam kedua-dua peperiksaan. Purata kohort penuh mungkin berubah kerana komposisi murid.'
   };
+}
+
+function teacherProgress_(db, e, classes, marks, p) {
+  var users = db.read('USERS'), groups = Object.create(null);
+  db.read('ASSIGNMENTS').filter(function(a) {
+    return bool_(a.active) && String(a.academic_year) === String(e.academic_year) && a.assignment_type === 'SUBJECT_TEACHER' && classes.some(function(c) {return c.class_id === a.class_id;}) && (!p.subject_code || p.subject_code === a.subject_code);
+  }).forEach(function(a) {
+    var teacher = users.find(function(u) { return u.user_id === a.user_id && bool_(u.active); });
+    if (!teacher) return;
+    var rows = marks.filter(function(m) {return m.class_id_snapshot === a.class_id && m.subject_code === a.subject_code && !(m.mark_status === 'TB' && bool_(m.default_tb));});
+    var sub = submission_(db, e.exam_id, a.class_id, a.subject_code);
+    var g = groups[a.user_id] || (groups[a.user_id] = {name: teacher.full_name, total: 0, completed: 0, submitted: 0, assignments: 0, details: []});
+    var completed = rows.filter(function(r) {return r.mark_status !== 'EMPTY';}).length;
+    var submitted = !!sub && ['SUBMITTED', 'AMENDED'].indexOf(sub.submission_status) >= 0;
+    g.total += rows.length; g.completed += completed; g.submitted += submitted ? 1 : 0; g.assignments++;
+    g.details.push({class_id: a.class_id, subject: a.subject_code, total: rows.length, completed: completed, status: sub ? sub.submission_status : 'NOT_PREPARED'});
+  });
+  return Object.keys(groups).map(function(k) {var g = groups[k]; g.percentage = g.total ? Math.round(100 * g.completed / g.total) : null; return g;}).sort(function(a,b) {return a.name.localeCompare(b.name, 'ms');});
 }

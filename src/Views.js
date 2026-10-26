@@ -28,6 +28,7 @@ function sessionContext_(db, u) {
   });
   return {
     user: publicUser_(u),
+    teacher_exam_focus: teacherExamFocus_(db),
     exams: exams.map(examView_),
     classes: db.read('CLASSES').filter(function(c) {
       return role_(u, 'ADMINISTRATOR') || assigned.some(function(a) {

@@ -21,3 +21,10 @@ Sandaran tempatan meliputi kod HEAD asal dan rekod deployment versi 2. Ia bukan 
 ## Paparan dipermudah — versi 4
 
 Deployment yang sama dikemas kini kepada versi 4 pada 22 Oktober 2026. Halaman awam baharu disahkan pada URL langsung. Paparan guru dan pentadbir, import dan kawalan akses pautan pangkalan data diuji dengan data rekaan, bukan akaun guru sebenar. Semua nama masih perlu diisi melalui templat dan diimport. Tiada Sheet baharu diwujudkan atau data sebenar diimport semasa kemas kini paparan. Lihat APA_PERLU_BUAT.md.
+
+
+## Gateway GitHub Pages — 26 Oktober 2026
+
+Pintu masuk: https://methodistpj.github.io/emarkahmps/
+
+GitHub Pages menerbitkan folder `/docs` daripada cabang `main`. `docs/index.html` menghala terus ke URL Apps Script sedia ada, dengan pautan **Masuk Sistem** sebagai sandaran dan meta refresh jika JavaScript tidak tersedia. Tiada borang login, data sekolah, token atau PIN disimpan pada gateway. Parameter URL tidak dihantar ke Apps Script. Akaun, pengisian, markah dan pangkalan data kekal pada Web App asal.

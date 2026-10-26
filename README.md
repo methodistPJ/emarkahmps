@@ -22,3 +22,15 @@ Core tests require Node20+ and no downloaded packages. Optional browser tests re
 Read BULK_IMPORT_GUIDE before using the template. Replace all fictional DEMO rows; do not upload example records to the real school. Import creates/reconciles setup records, not marks. Exams stay DRAFT on initial import; readiness plus an explicit administrator prepare/open action is required. Existing PINs are preserved. New teachers require private individual activation codes and a new permanent PIN before any workspace session.
 
 This is a locally tested release candidate, not a claim of new live Google integration or production certification. Complete the staging acceptance checklist before the operator updates the existing versioned deployment.
+
+
+### Paparan peranan — 26 Oktober 2026
+
+- Login kod guru + PIN tanpa alias; identiti akaun dan PIN sedia ada dikekalkan.
+- Dashboard admin padat, analitik terus peperiksaan semasa, kemajuan guru mengasingkan pengisian daripada penghantaran. TB lalai tidak menaikkan peratus pengisian.
+- Kad gred A–F, kad kelas boleh dibuka, graf setempat interaktif dan penapis tersembunyi. CSV hanya untuk admin.
+- Guru kelas hanya boleh meminda markah, menulis ulasan dan mengesahkan selepas semua subjek kelas dihantar. Semakan server diwajibkan. Pindaan diaudit dan resit penghantaran asal dikekalkan.
+- Nama dan masa pengesah kelihatan kepada guru subjek. Pengesahan semula rekod yang sama tidak menaikkan revisi PDF. Kelas dimuktamadkan masih memerlukan admin membuka semula sebelum pindaan.
+- Dialog menyimpan/mengesahkan mengunci interaksi; autosimpan kekal dengan indikator ringan. Markah melebihi 100 dihadkan kepada 100 pada input/tampalan; semakan server dikekalkan.
+- Pramuat hanya konteks, dashboard dan analitik semasa dalam memori sesi (20 saat, maksimum lapan entri). Markah/semakan kelas dimuat apabila dibuka. Refresh latar 45 saat ketika tab aktif dan tiada input/draf/dialog; tidak bertindih atau menimpa input.
+- Tiada reset markah, murid, guru, tarikh peperiksaan atau PIN melalui kemas kini paparan ini.

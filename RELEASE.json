@@ -1,7 +1,7 @@
 {
   "version": "1.0.3-rc.1",
-  "date": "2026-10-25",
-  "status": "release-candidate-staging-acceptance-required",
+  "date": "2026-10-26",
+  "status": "verified-role-workspace-update",
   "baseline": "latest workspace v1.0.2 Release Candidate",
   "baseline_checksums_file_sha256": "26a2ddb04c6eaed7a7827c80df62da818a6057023786f49593b4425bb2afb9cb",
   "schema_changed": false,
@@ -15,12 +15,12 @@
     "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e"
   },
   "rollback_warning": "Suspend all pending accounts before reverting to v1.0.2 auth.",
-  "production_deployment_date": "2026-10-25",
-  "apps_script_version": 7,
-  "previous_apps_script_version": 6,
-  "live_verification": "Version 5 deployed on existing URL; real-school import blocked by teacher identifiers. Synthetic browser tests cover filtered entry/save/submit and template preview.",
-  "ui_revision": "stable-import-preview-revalidation",
+  "production_deployment_date": "2026-10-26",
+  "apps_script_version": 9,
+  "previous_apps_script_version": 8,
+  "live_verification": "Production URL retained; no mark reset or setup mutation performed by UI deployment. Teacher login required for authenticated live acceptance.",
+  "ui_revision": "compact-role-workspaces-v1",
   "participation_revision": "optional-student-fields-v1",
-  "verification": "Core suites plus five canonical RPC/import regressions passed. Live school import pending revalidation.",
+  "verification": "All core suites plus class-submission gating, confirmation, teacher progress and background refresh regressions passed. Synthetic CUA browser tests cover two-field login, cap 100, save/submit dialogs, class amendments, named confirmation, analytics, responsive phone layout.",
   "teacher_identifier_revision": "name-code-v1-legacy-six-digit-compatible"
 }

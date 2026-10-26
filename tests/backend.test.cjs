@@ -382,6 +382,18 @@ test('Submission requires completeness and default TB acknowledgement', () => {
   }, 'bad'));
 });
 test('Class teacher amendment preserves teacher submission revision', () => {
+  const blocked = db().marks('UPSA', 'C4', 'PI')[0];
+  assert.equal(context.reviewGet_(db(),ct,{exam_id:'UPSA',class_id:'C4'}).editable,false);
+  assert.throws(()=>context.saveMarks_(db(),ct,{mode:'CLASS_REVIEW',exam_id:'UPSA',class_id:'C4',changes:[{mark_id:blocked.mark_id,version:blocked.record_version,value:83,reason:'Blocked until all submit'}]},'gate'),/Semua guru subjek/);
+  assert.throws(()=>context.remarkSave_(db(),ct,{exam_id:'UPSA',class_id:'C4',changes:[]},'gate'),/Semua guru subjek/);
+  for(const subject of context.SUBJECT_SEED_.map(s=>s[0]).filter(s=>s!=='PI')){
+    let rows=db().marks('UPSA','C4',subject);
+    mutate(d=>context.saveMarks_(d,teacher,{exam_id:'UPSA',class_id:'C4',changes:rows.map(m=>({mark_id:m.mark_id,version:m.record_version,value:m.mark_status==='TB'?'TB':82}))},'fill'));
+    rows=db().marks('UPSA','C4',subject);
+    mutate(d=>context.submit_(d,teacher,{exam_id:'UPSA',class_id:'C4',subject_code:subject,versions:rows.map(m=>[m.mark_id,Number(m.record_version)]),tb_acknowledged:true,all_tb_acknowledged:true},'submit'));
+  }
+
+  assert.equal(context.reviewGet_(db(),ct,{exam_id:'UPSA',class_id:'C4'}).editable,true);
   const m = db().marks('UPSA', 'C4', 'PI')[0],
     before = plain(context.submission_(db(), 'UPSA', 'C4', 'PI'));
   assert.throws(() => context.saveMarks_(db(), ct, {
@@ -409,6 +421,10 @@ test('Class teacher amendment preserves teacher submission revision', () => {
   assert.equal(after.submitted_versions, before.submitted_versions);
   assert.equal(after.submission_status, 'AMENDED');
   assert.equal(after.submitted_by, 'teacher');
+  const refreshedRows=context.entryMarks_(db(),'UPSA','C4','PI');
+  const resubmitted=mutate(d=>context.submit_(d,teacher,{exam_id:'UPSA',class_id:'C4',subject_code:'PI',versions:refreshedRows.map(m=>[m.mark_id,Number(m.record_version)]),tb_acknowledged:true,all_tb_acknowledged:true},'reconfirm'));
+  assert.equal(resubmitted.submission_status,'AMENDED');
+  assert.equal(resubmitted.submitted_versions,before.submitted_versions);
   assert.ok(db().read('AUDIT_LOG').some(a => a.action === 'CLASS_AMENDMENT'));
 });
 test('Finalization blocks missing remarks/submissions, then freezes whole class', () => {
@@ -419,7 +435,7 @@ test('Finalization blocks missing remarks/submissions, then freezes whole class'
   }, 'bad'));
   for (const subject of context.SUBJECT_SEED_.map(s => s[0])) {
     let rows = db().marks('UPSA', 'C4', subject);
-    if (subject !== 'PI') {
+    if (context.submission_(db(), 'UPSA', 'C4', subject).submission_status === 'DRAFT') {
       mutate(d => context.saveMarks_(d, teacher, {
         exam_id: 'UPSA',
         class_id: 'C4',
@@ -468,12 +484,9 @@ test('Finalization blocks missing remarks/submissions, then freezes whole class'
   const meta = context.metadata_(db(), 'UPSA', 'C4');
   assert.equal(meta.pdf_status, 'QUEUED');
   assert.equal(meta.class_finalization_revision, 1);
-  assert.throws(() => context.finalize_(db(), ct, {
-    exam_id: 'UPSA',
-    class_id: 'C4',
-    confirmed: true,
-    revisionHash: ready.revisionHash
-  }, 'again'));
+  const repeated=mutate(d=>context.finalize_(d, ct, {exam_id:'UPSA',class_id:'C4',confirmed:true,revisionHash:ready.revisionHash}, 'again'));
+  assert.equal(repeated.revision,1);
+  assert.equal(context.verificationView_(db(),'UPSA','C4').name,ct.full_name);
   assert.throws(() => context.saveMarks_(db(), ct, {
     mode: 'CLASS_REVIEW',
     exam_id: 'UPSA',

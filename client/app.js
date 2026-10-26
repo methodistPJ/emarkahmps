@@ -1,5 +1,6 @@
 (function(M) {
   M.expire = () => {
+    M.invalidateViews();M.stopRefresh();
     M.refreshAdminData = null;
     document.querySelector('#issued-activation')?.replaceChildren();
     clearTimeout(M.saveTimer);
@@ -12,64 +13,20 @@
       'Sesi tamat. Log masuk semula untuk menyimpan draf tempatan.';
   };
   M.openDashboard = async (prefetched = null) => {
-    await M.guard();
-    const d = prefetched || await M.call('dashboard');
-    M.context = null;
-    M.remarkFlush = null;
-    const admin = d.user.roles.includes('ADMINISTRATOR');
-    const count = t => Object.values(t.stats.status).reduce((n, v) => n + Number(v || 0), 0);
-    const progress = t => count(t) ? Math.round(100 * (count(t) - Number(t.stats.status.EMPTY || 0)) / count(t)) : 0;
-    const title = t => t.assignment.subject_code ? 'Isi Markah' : admin ? 'Lihat Kelas' : 'Semak Kelas & Ulasan';
-    const cards = d.tasks.map((t, i) => `<article class="task-card"><p class="eyebrow">${M.esc(t.exam.exam_type+' '+t.exam.academic_year)} · ${M.esc(t.exam.status)}</p><h3>${M.esc(t.class.class_name)}${t.assignment.subject_code?' · '+M.esc(t.assignment.subject_code):''}</h3><p>${count(t)?progress(t)+'% sel lengkap · '+Number(t.stats.status.EMPTY||0)+' belum diisi':'Markah peperiksaan belum disediakan'}</p><progress max="100" value="${progress(t)}" aria-label="Kelengkapan ${M.esc(t.class.class_name)}"></progress><p>${t.metadata?.finalized_at?'Kelas dimuktamadkan':M.esc(t.submission?.submission_status||'Belum dimuktamadkan')} · Akhir: ${M.date(t.exam.closing_date)}</p><button data-task="${i}" ${t.exam.status==='DRAFT'?'disabled':''}>${title(t)}</button></article>`).join('');
-    const total = d.tasks.reduce((n, t) => n + count(t), 0),
-      empty = d.tasks.reduce((n, t) => n + Number(t.stats.status.EMPTY || 0), 0),
-      final = d.tasks.filter(t => t.metadata?.finalized_at).length;
-    document.querySelector('#content').innerHTML = `<p class="eyebrow">${admin?'PUSAT PEMANTAUAN PENTADBIR':'TUGASAN SAYA'}</p><h2>${admin?'Progress & Analisis Sekolah':'Apa perlu saya buat?'}</h2><p>${admin?'Isi data sekolah secara pukal, kemudian pantau pengisian markah dan semakan kelas di sini.':'Pilih kelas dan subjek di bawah. Akaun, kelas dan tugasan disediakan oleh pentadbir; guru tidak perlu mendaftar sendiri.'}</p>${admin?`<div class="toolbar"><button id="home-import">1. Isi / Import Data Sekolah</button><button id="home-analysis">Lihat Analisis</button><button id="home-monitor">Progress Terperinci</button><span id="home-data-link"></span></div><div class="metrics"><div class="metric"><strong>${total?Math.round(100*(total-empty)/total)+'%':'—'}</strong><span>Sel markah lengkap</span></div><div class="metric"><strong>${empty}</strong><span>Sel belum diisi</span></div><div class="metric"><strong>${final} / ${d.tasks.length}</strong><span>Kelas-peperiksaan dimuktamadkan</span></div></div><aside class="setup-help"><h3>Semua nama dimasukkan sekali dalam satu fail</h3><p>Isi senarai kelas, murid, guru, guru kelas dan guru subjek dalam templat Excel. Import satu fail untuk menyediakan semua rekod; tidak perlu daftar satu demi satu. Jika mengisi melalui Google Sheets, muat turun sebagai Excel (.xlsx) sebelum import.</p><p>Perubahan dalam fail persediaan hanya digunakan selepas import dan pengesahan. Pangkalan data operasi bukan templat pengisian.</p><button id="home-template" class="secondary">Muat Turun Templat Nama Murid & Guru</button></aside>`:''}<h3>${admin?'Progress mengikut kelas dan peperiksaan':'Isi markah / semak kelas'}</h3><p class="muted">Peratus mengira SCORED, TH dan TB sebagai sel lengkap. TB lalai termasuk dalam kiraan; penghantaran subjek dan pengesahan kelas masih diperlukan.</p><div class="task-grid">${cards}</div>${!d.tasks.length?`<p class="empty-state">${admin?'Belum ada tugasan peperiksaan. Mulakan dengan Isi / Import Data Sekolah, semak kelengkapan dan sediakan peperiksaan.':'Tugasan belum disediakan. Hubungi pentadbir; anda tidak perlu mendaftar murid atau kelas sendiri.'}</p>`:''}`;
-    document.querySelectorAll('[data-task]').forEach(b => b.onclick = () => M.run(async () => {
-      const t = d.tasks[Number(b.dataset.task)];
-      M.authStore('setItem', 'mps-last-task', JSON.stringify({
-        e: t.exam.exam_id,
-        c: t.class.class_id,
-        s: t.assignment.subject_code
-      }));
-      if (t.assignment.subject_code) await M.openMarks(t.exam.exam_id, t.class.class_id, t.assignment.subject_code);
-      else await M.openReview(t.exam.exam_id, t.class.class_id);
-    }));
-    let last = null;
-    try {
-      last = JSON.parse(M.authStore('getItem', 'mps-last-task') || 'null');
-    } catch (e) {}
-    if (last && d.tasks.some(t => t.exam.status !== 'DRAFT' && t.exam.exam_id === last.e && t.class.class_id === last.c && (t.assignment.subject_code || '') === (last.s || ''))) {
-      const resume = document.createElement('button');
-      resume.textContent = 'Sambung Tugasan Terakhir';
-      resume.onclick = () => M.run(() => last.s ? M.openMarks(last.e, last.c, last.s) : M.openReview(last.e, last.c));
-      document.querySelector('#content').append(resume);
-    }
-    if (admin) {
-      document.querySelector('#home-import').onclick = () => M.run(() => M.openAdmin('import'));
-      document.querySelector('#home-analysis').onclick = () => M.run(() => M.openAnalytics());
-      document.querySelector('#home-monitor').onclick = () => M.run(() => M.openAdmin('operations'));
-      document.querySelector('#home-template').onclick = () => {
-        const bytes = Uint8Array.from(atob(window.MPS_SCHOOL_TEMPLATE), c => c.charCodeAt(0));
-        M.download('MPS-eAssessment-School-Setup-2026.xlsx', new Blob([bytes], {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        }));
-      };
-      try {
-        const links = await M.call('adminLinks');
-        const host = document.querySelector('#home-data-link');
-        if (host && links.database_url && /^https:\/\/docs\.google\.com\/spreadsheets\/d\//.test(links.database_url)) {
-          const a = document.createElement('a');
-          a.href = links.database_url;
-          a.target = '_blank';
-          a.rel = 'noopener';
-          a.textContent = 'Buka Pangkalan Data (Pentadbir)';
-          host.append(a);
-        }
-      } catch (e) {
-        /* The import and task controls remain usable if link lookup fails. */ }
-    }
+    await M.guard();M.view('dashboard');
+    const d=prefetched||await M.read('dashboard');M.teacherFocus=d.teacher_exam_focus||'UASA';
+    M.context=null;M.remarkFlush=null;
+    const admin=d.user.roles.includes('ADMINISTRATOR'),exam=M.currentExam(d.exams),tasks=d.tasks.filter(t=>!exam||t.exam.exam_id===exam.exam_id);
+    const count=t=>Object.values(t.stats.status).reduce((n,v)=>n+Number(v||0),0),progress=t=>count(t)?Math.round(100*(count(t)-Number(t.stats.status.EMPTY||0))/count(t)):0;
+    const total=tasks.reduce((n,t)=>n+count(t),0),empty=tasks.reduce((n,t)=>n+Number(t.stats.status.EMPTY||0),0),final=tasks.filter(t=>t.metadata?.finalized_at).length,subs=tasks.flatMap(t=>t.submissions||[]),submitted=subs.filter(s=>['SUBMITTED','AMENDED'].includes(s.status)).length;
+    const content=document.querySelector('#content');
+    content.innerHTML=`<p class="eyebrow">${admin?'PUSAT PENTADBIR':'TUGASAN SAYA'}</p><h2>${exam?M.esc(exam.exam_type+' '+exam.academic_year):'Workspace sekolah'}</h2><p>${exam?M.esc(exam.status)+' · Pengisian sehingga '+M.date(exam.closing_date):'Peperiksaan belum disediakan.'}</p>${M.refreshBar()}${admin?`<div class="metrics"><div class="metric"><strong>${total?Math.round(100*(total-empty)/total):0}%</strong><span>Pengisian</span></div><div class="metric"><strong>${submitted}/${subs.length}</strong><span>Subjek dihantar</span></div><div class="metric"><strong>${final}/${tasks.length}</strong><span>Kelas disahkan</span></div><div class="metric"><strong>${empty}</strong><span>Markah belum diisi</span></div></div><div class="workspace-actions"><button id="home-monitor">Pantau Guru</button><button id="home-analysis">Analisis</button><button id="home-import">Urus Sekolah</button></div><p class="muted">Mulakan dengan kelas yang belum lengkap. TB lalai tidak menaikkan peratus pengisian.</p>`:`<div class="role-switch"><button data-role-view="subject" aria-pressed="true">Subjek Saya</button>${tasks.some(t=>!t.assignment.subject_code)?'<button data-role-view="class" aria-pressed="false">Kelas Saya</button>':''}</div><p id="role-help">Isi markah, simpan dan hantar untuk semakan guru kelas.</p>`}<div class="task-grid">${tasks.map((t,i)=>`<article class="task-card" data-role-card="${t.assignment.subject_code?'subject':'class'}"><span class="status-badge">${t.metadata?.finalized_at?'Kelas disahkan':t.assignment.subject_code?M.esc(t.submission?.submission_status||'Belum disediakan'):t.gate?.ready?'Sedia disemak':'Menunggu guru subjek'}</span><h3>${M.esc(t.class.class_name)}${t.assignment.subject_code?' · '+M.esc(t.assignment.subject_code):''}</h3><p>${count(t)?progress(t)+'% diisi · '+Number(t.stats.status.EMPTY||0)+' belum diisi':'Markah belum disediakan'}</p><progress max="100" value="${progress(t)}"></progress>${!t.assignment.subject_code&&t.gate&&!t.gate.ready?`<p>Belum dihantar: ${M.esc(t.gate.missing.join(', '))}</p>`:''}<button data-task="${i}" ${t.exam.status==='DRAFT'?'disabled':''}>${t.assignment.subject_code?'Isi / Lihat Markah':admin?'Lihat Kelas':'Semak Kelas & Ulasan'}</button></article>`).join('')}</div>${!tasks.length?'<p class="empty-state">Tugasan belum disediakan. Hubungi pentadbir.</p>':''}`;
+    if(!admin){let mode=tasks.some(t=>t.assignment.subject_code)?'subject':'class';const choose=()=>{content.querySelectorAll('[data-role-card]').forEach(c=>c.hidden=c.dataset.roleCard!==mode);content.querySelectorAll('[data-role-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.roleView===mode)));document.querySelector('#role-help').textContent=mode==='class'?'Pantau penghantaran subjek. Edit, ulasan dan pengesahan dibuka selepas semua subjek dihantar.':'Isi markah, simpan dan hantar untuk semakan guru kelas.';};content.querySelectorAll('[data-role-view]').forEach(b=>b.onclick=()=>{mode=b.dataset.roleView;M.roleTab=mode;choose();});if(M.roleTab&&tasks.some(t=>(t.assignment.subject_code?'subject':'class')===M.roleTab))mode=M.roleTab;choose();}
+    content.querySelectorAll('[data-task]').forEach(b=>b.onclick=()=>M.run(async()=>{const t=tasks[Number(b.dataset.task)];M.authStore('setItem','mps-last-task',JSON.stringify({e:t.exam.exam_id,c:t.class.class_id,s:t.assignment.subject_code}));if(t.assignment.subject_code)await M.openMarks(t.exam.exam_id,t.class.class_id,t.assignment.subject_code);else await M.openReview(t.exam.exam_id,t.class.class_id);}));
+    if(admin){document.querySelector('#home-import').onclick=()=>M.run(()=>M.openAdmin());document.querySelector('#home-analysis').onclick=()=>M.run(()=>M.openAnalytics());document.querySelector('#home-monitor').onclick=()=>M.run(()=>M.openAnalytics());}
+    M.view('dashboard',async()=>{const fresh=await M.read('dashboard',{},true);if(M.viewName==='dashboard')await M.renderDashboard(fresh);});M.bindRefresh();M.prefetchRole();
   };
+  M.renderDashboard=M.openDashboard;
   const enter = async (prefetched = null) => {
     const d = prefetched || await M.call('dashboard');
     if (M.user?.user_id === d.user.user_id) await M.guard();
@@ -119,7 +76,7 @@
           'Mengesahkan…';
 
         const code = String(f.get('code')).trim().toUpperCase();
-        const alias = f.get('alias').trim().toLowerCase();
+        const alias = '';
 
         // Step 1: Get authentication challenge.
         const challenge = await M.call('challenge', {

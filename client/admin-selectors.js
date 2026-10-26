@@ -20,10 +20,10 @@
     });
     if (table === 'USERS') {
       const code = form.elements.identification_code;
-      code.inputMode = 'numeric';
-      code.pattern = '[0-9]{6}';
-      code.minLength = 6;
-      code.maxLength = 6;
+      code.inputMode = 'text';
+      code.pattern = '([0-9]{6}|[A-Za-z][A-Za-z0-9_-]{1,29})';
+      code.minLength = 2;
+      code.maxLength = 30;
       code.required = true;
       form.elements.pin.minLength = 10;
       form.elements.pin.maxLength = 64;
@@ -39,7 +39,7 @@
       EXAMS: 'exam_id'
     } [table];
     if (primary && record[primary]) form.elements[primary].readOnly = true;
-    const row = form.parentElement.querySelector('.table-scroll');
+    const row = document.querySelector('#admin-section > .table-scroll');
     if (row) {
       const label = document.createElement('label');
       label.textContent = 'Cari dalam senarai';

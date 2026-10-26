@@ -2,11 +2,13 @@
   M.remarkPending = new Map();
   M.remarkInflight = null;
   M.remarkFlush = null;
-  M.openReview = async (exam_id, class_id) => {
-    await M.guard();
+  M.openReview = async (exam_id, class_id, prefetched=null) => {
+    await M.guard();M.view('review');
     const nextContext={exam_id,class_id,mode:'CLASS_REVIEW'};
-    const d=await M.call('reviewGet',nextContext);
-    M.context=nextContext;M.openCurrent=()=>M.openReview(exam_id,class_id);
+    const previousSection=prefetched?document.querySelector('[data-section][aria-pressed=true]')?.dataset.section:null;
+    const previousStudents=prefetched?[...document.querySelectorAll('details[data-student][open]')].map(n=>n.dataset.student):[];
+    const d=prefetched||await M.call('reviewGet',nextContext);
+    M.viewPayload=d;M.context=nextContext;M.openCurrent=()=>M.openReview(exam_id,class_id);
     M.draftKey=`mps-draft:${M.user.user_id}:${exam_id}:${class_id}:review`;
     M.pending=new Map();M.inflight=null;
     M.currentMarks = d.marks;
@@ -81,32 +83,41 @@
       if (M.remarkPending.size) await M.remarkFlush();
     };
     const content = document.querySelector('#content');
+    const gate=d.gate||{ready:d.readiness.missingSubmissions.length===0,missing:d.readiness.missingSubmissions};
+    const verification=d.verification||{confirmed:!!meta?.finalized_at,name:'',at:meta?.finalized_at};
+    const ownConfirmation=verification.confirmed?`Markah ini telah disemak dan disahkan oleh ${verification.name===M.user.full_name?'anda':M.esc(verification.name||'guru kelas')} pada ${M.date(verification.at)}.`:M.confirmation(verification);
     content.innerHTML =
-      `<p class="eyebrow">CLASS TEACHER WORKSPACE</p><h2>${M.esc(d.class.class_name)} <em>/ ${M.esc(d.exam.exam_type)}</em></h2><p id="save-status" class="save-status" role="status">${M.remarkPending.size||M.remarkInflight?'Draf ulasan dipulihkan.':'Keputusan semasa.'}</p><div class="tabs"><button data-section="matrix">Markah Keseluruhan</button><button data-section="remarks">Ulasan Guru</button><button data-section="verification">Pengesahan</button></div><section id="matrix"><label><input type="checkbox" id="incomplete-only"> Paparkan murid dengan markah belum lengkap sahaja</label><div class="table-scroll"><table><thead><tr><th class="frozen">Nama Murid</th>${d.subjects.map(s=>`<th>${M.esc(s.subject_code)}<br><small>${M.esc(d.submissions.find(x=>x.subject_code===s.subject_code)?.submission_status||'DRAFT')}</small></th>`).join('')}</tr></thead><tbody>${students.map(s=>`<tr data-student="${M.esc(s.student_id)}"><td class="frozen">${M.esc(s.student_name_snapshot)}</td>${d.subjects.map(sub=>{const m=d.marks.find(x=>x.student_id===s.student_id&&x.subject_code===sub.subject_code);return `<td><button class="matrix-button" data-mark="${M.esc(m?.mark_id||'')}" ${editable?'':'disabled'}>${M.esc(m?M.display(m)||'EMPTY':'—')} <small>${M.esc(m?.grade||'')}${m?.amendment_reason?' · Dipinda':''}</small></button></td>`;}).join('')}</tr>`).join('')}</tbody></table></div><div id="amend-panel"></div><div id="conflict" class="conflict" hidden></div></section>
- <section id="remarks" hidden><p>Ulasan wajib bagi setiap murid. Maksimum 300 aksara, satu perenggan.</p><div class="toolbar"><label>Templat ulasan<select id="remark-template"><option value="">Pilih…</option><option>Teruskan usaha dan amalkan pembelajaran yang konsisten.</option><option>Tingkatkan latihan dan dapatkan bimbingan bagi topik yang belum dikuasai.</option></select></label><button id="bulk-remark" ${editable?'':'disabled'}>Terapkan kepada ulasan kosong</button><button id="retry-remarks">Cuba Simpan</button><button id="export-remarks">Eksport Draf</button><button id="discard-remarks">Buang draf & muat semula</button></div><div class="table-scroll"><table><thead><tr><th>Murid</th><th>Ulasan</th></tr></thead><tbody>${students.map(s=>{const value=M.remarkPending.get(s.student_id)?.remark??M.remarkInflight?.payload.changes.find(c=>c.student_id===s.student_id)?.remark??s.class_teacher_remark;return `<tr><td>${M.esc(s.student_name_snapshot)}</td><td><textarea data-remark="${M.esc(s.student_id)}" maxlength="300" aria-label="Ulasan ${M.esc(s.student_name_snapshot)}" ${editable?'':'readonly'}>${M.esc(value)}</textarea><small class="remark-length">${value.length}/300</small></td></tr>`;}).join('')}</tbody></table></div></section>
- <section id="verification" hidden><div id="readiness"></div><button id="refresh-verification">Semak Kesiapsiagaan</button><button id="finalize-class" ${editable?'':'disabled'}>SAHKAN & JANA SLIP</button><button id="download-class" ${meta?.pdf_status==='COMPLETED'?'':'disabled'}>Muat Turun PDF Kelas</button><div id="slip-preview"></div></section>`;
+      `<p class="eyebrow">KELAS SAYA</p><h2>${M.esc(d.class.class_name)} / ${M.esc(d.exam.exam_type)}</h2>${ownConfirmation?`<p class="confirmed-banner">${ownConfirmation}</p>`:''}${!gate.ready?`<p class="attention-banner">Menunggu semua guru subjek selesai mengisi dan menghantar. Belum dihantar: ${M.esc(gate.missing.join(', '))}. Edit, ulasan dan pengesahan belum dibuka.</p>`:''}<p id="save-status" class="save-status" role="status">${M.remarkPending.size||M.remarkInflight?'Draf ulasan dipulihkan.':'Keputusan semasa.'}</p>${M.refreshBar()}<div class="section-tabs"><button data-section="overview">Kemajuan Subjek</button><button data-section="matrix">Keputusan Murid</button><button data-section="remarks">Ulasan Guru</button><button data-section="verification">Pengesahan & Slip</button></div>
+<section id="overview"><div class="compact-grid">${d.subjects.map(sub=>{const rows=d.marks.filter(m=>m.subject_code===sub.subject_code&&!(m.mark_status==='TB'&&m.default_tb)),done=rows.filter(m=>m.mark_status!=='EMPTY').length,status=d.submissions.find(s=>s.subject_code===sub.subject_code)?.submission_status||'DRAFT';return `<article class="analysis-card"><h4>${M.esc(sub.subject_name||sub.subject_code)}</h4><span class="status-badge">${M.esc(status)}</span><p>${M.esc(d.subject_teachers?.find(t=>t.subject_code===sub.subject_code)?.names.join(', ')||'')}</p><p>${rows.length?Math.round(100*done/rows.length):100}% pengisian · ${done}/${rows.length}</p><progress max="100" value="${rows.length?100*done/rows.length:100}"></progress></article>`;}).join('')}</div></section>
+<section id="matrix" hidden><div class="toolbar"><label>Cari murid<input id="review-search" type="search"></label><label><input type="checkbox" id="incomplete-only"> Belum lengkap sahaja</label></div><div class="student-cards">${students.map(s=>`<details data-accordion data-student="${M.esc(s.student_id)}"><summary>${M.esc(s.student_name_snapshot)} <span class="status-badge">${d.marks.filter(m=>m.student_id===s.student_id&&m.mark_status==='EMPTY').length?'Belum lengkap':'Markah lengkap'}</span></summary><div class="table-scroll"><table><thead><tr><th>Subjek</th><th>Markah</th><th>Gred</th></tr></thead><tbody>${d.subjects.map(sub=>{const m=d.marks.find(x=>x.student_id===s.student_id&&x.subject_code===sub.subject_code);return `<tr><td>${M.esc(sub.subject_code)}</td><td><button class="matrix-button" data-mark="${M.esc(m?.mark_id||'')}" ${editable?'':'disabled'}>${M.esc(m?M.display(m)||'EMPTY':'—')}</button></td><td>${M.esc(m?.grade||'—')}${m?.amendment_reason?' · Dipinda':''}</td></tr>`;}).join('')}</tbody></table></div><p>Ulasan: ${M.esc(s.class_teacher_remark||'Belum diisi')}</p></details>`).join('')}</div><div id="amend-panel"></div><div id="conflict" class="conflict" hidden></div></section>
+<section id="remarks" hidden><p>Ulasan wajib bagi setiap murid. Maksimum 300 aksara.</p><div class="toolbar"><label>Templat ulasan<select id="remark-template"><option value="">Pilih…</option><option>Teruskan usaha dan amalkan pembelajaran yang konsisten.</option><option>Tingkatkan latihan dan dapatkan bimbingan bagi topik yang belum dikuasai.</option></select></label><button id="bulk-remark" ${editable?'':'disabled'}>Terapkan kepada ulasan kosong</button><button id="retry-remarks" ${editable?'':'disabled'}>${students.some(s=>s.class_teacher_remark)?'Kemaskini':'Simpan Ulasan'}</button><button id="export-remarks" class="secondary">Eksport Draf Pemulihan</button><button id="discard-remarks" class="secondary">Buang draf & muat semula</button></div><div class="student-cards">${students.map(s=>{const value=M.remarkPending.get(s.student_id)?.remark??M.remarkInflight?.payload.changes.find(c=>c.student_id===s.student_id)?.remark??s.class_teacher_remark??'';return `<details data-accordion><summary>${M.esc(s.student_name_snapshot)} · ${value.trim()?'Ada ulasan':'Belum diisi'}</summary><textarea data-remark="${M.esc(s.student_id)}" maxlength="300" aria-label="Ulasan ${M.esc(s.student_name_snapshot)}" ${editable?'':'readonly'}>${M.esc(value)}</textarea><small class="remark-length">${value.length}/300</small></details>`;}).join('')}</div></section>
+<section id="verification" hidden><div id="readiness"></div><button id="refresh-verification">Semak Kesiapsiagaan</button><button id="finalize-class" ${d.editable?'':'disabled'}>${meta?.finalized_at?'Sahkan Semula':'Semak, Sahkan & Jana Slip'}</button><button id="download-class" ${meta?.pdf_status==='COMPLETED'?'':'disabled'}>Muat Turun PDF Kelas</button><div id="slip-preview"></div></section>`;
+    M.accordions(content);M.bindRefresh();
     document.querySelectorAll('[data-section]').forEach(b => b.onclick = () => {
-      ['matrix', 'remarks', 'verification'].forEach(id => document.getElementById(id).hidden =
+      ['overview', 'matrix', 'remarks', 'verification'].forEach(id => document.getElementById(id).hidden =
         id !== b.dataset.section);
+      content.querySelectorAll('[data-section]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
     });
-    document.querySelector('#incomplete-only').onchange = e => document.querySelectorAll(
-      '[data-student]').forEach(row => row.hidden = e.target.checked && !d.marks.some(m => m
-      .student_id === row.dataset.student && m.mark_status === 'EMPTY'));
+    const filterStudents=()=>content.querySelectorAll('[data-student]').forEach(row=>{const student=students.find(s=>s.student_id===row.dataset.student),q=document.querySelector('#review-search').value.toLowerCase();row.hidden=!student.student_name_snapshot.toLowerCase().includes(q)||document.querySelector('#incomplete-only').checked&&!d.marks.some(m=>m.student_id===row.dataset.student&&m.mark_status==='EMPTY');});
+    document.querySelector('#incomplete-only').onchange=filterStudents;document.querySelector('#review-search').oninput=filterStudents;
     document.querySelectorAll('[data-mark]').forEach(b => b.onclick = () => {
       const mark = d.marks.find(m => m.mark_id === b.dataset.mark);
+      b.closest('details').append(document.querySelector('#amend-panel'));
       document.querySelector('#amend-panel').innerHTML =
         `<form id="amend-form" class="panel"><h3>Pindaan ${M.esc(mark.subject_code)}</h3><p>${M.esc(mark.student_name_snapshot)} · Semasa ${M.esc(M.display(mark))}</p><label>Nilai baharu<input name="value" value="${M.esc(M.display(mark))}" required></label><label>Sebab pindaan<input name="reason" maxlength="300" required></label><button>Simpan Pindaan</button></form>`;
+      document.querySelector('#amend-form input[name=value]').oninput=e=>{e.target.value=M.limitMark(e.target.value);};
       document.querySelector('#amend-form').onsubmit = e => {
         e.preventDefault();
-        M.run(async () => {
+        M.feedback('Menyimpan pindaan…',async () => {
           const f = new FormData(e.target);
-          M.queue(mark, f.get('value'), f.get('reason'));
+          M.queue(mark, M.limitMark(f.get('value')), f.get('reason'));
           await M.flush();
           await M.openReview(exam_id, class_id);
         });
       };
     });
     const queueRemark = (s, value) => {
+      if(!editable)return;
       M.remarkPending.set(s.student_id, {
         student_id: s.student_id,
         version: Number(s.record_version),
@@ -118,12 +129,13 @@
       M.remarkTimer = setTimeout(() => M.run(M.remarkFlush), 650);
     };
     document.querySelectorAll('[data-remark]').forEach(t => t.oninput = () => {
+      if(!editable)return;
       t.value = t.value.replace(/[\r\n]+/g, ' ');
       t.nextElementSibling.textContent = t.value.length + '/300';
       queueRemark(students.find(s => s.student_id === t.dataset.remark), t.value);
     });
     document.querySelector('#export-remarks').onclick=M.exportDraft;
-    document.querySelector('#retry-remarks').onclick = () => M.run(M.remarkFlush);
+    document.querySelector('#retry-remarks').onclick = () => M.feedback('Menyimpan ulasan…',async()=>{await M.remarkFlush();document.querySelector('#retry-remarks').textContent='Kemaskini';},'Ulasan berjaya disimpan');
     document.querySelector('#discard-remarks').onclick = () => M.run(async () => {
       if (!confirm('Buang semua draf ulasan tempatan dan muat semula?')) return;
       M.remarkPending.clear();
@@ -131,7 +143,7 @@
       persist();
       await M.openReview(exam_id, class_id);
     });
-    document.querySelector('#bulk-remark').onclick = () => M.run(async () => {
+    document.querySelector('#bulk-remark').onclick = () => M.feedback('Menyimpan ulasan…',async () => {
       const value = document.querySelector('#remark-template').value;
       if (!value) throw new Error('Pilih templat ulasan dahulu.');
       if (!confirm('Terapkan ulasan ini kepada murid yang ulasannya kosong selepas semakan?'))
@@ -164,7 +176,7 @@
       document.querySelector('#slip-preview').innerHTML =
         `<details><summary>Pratonton kandungan murid pertama</summary><p>${M.esc(s.student_name_snapshot)}</p><p>${marks.map(m=>`${M.esc(m.subject_code)}: ${M.esc(M.display(m)||'EMPTY')} (${M.esc(m.grade||m.mark_status)})`).join(' · ')}</p><p>${M.esc(s.class_teacher_remark)}</p><p class="muted">Susun atur A4 disahkan oleh penjana PDF selepas pemuktamadan.</p></details>`;
     });
-    document.querySelector('#finalize-class').onclick = () => M.run(async () => {
+    document.querySelector('#finalize-class').onclick = () => M.feedback('Menyemak dan mengesahkan kelas…',async () => {
       await M.guard();
       M.checkOtherDrafts();
       const current = await M.call('reviewGet', M.context);
@@ -180,9 +192,13 @@
         confirmed: true
       }, true);
       await M.openReview(exam_id, class_id);
-      M.notice('Seluruh kelas disahkan. PDF sedang dijadualkan.');
+      M.notice('Seluruh kelas disahkan. Semak status PDF di bahagian Pengesahan & Slip.');
     });
+    M.view('review',async()=>{const fresh=await M.call('reviewGet',nextContext);const stamp=x=>JSON.stringify([x.marks.map(m=>m.record_version),x.reviews.map(r=>[r.record_version,r.pdf_status,r.finalized_at]),x.submissions]);if(M.viewName==='review'&&JSON.stringify(M.context)===JSON.stringify(nextContext)&&!M.dirty()&&!document.activeElement?.matches('input,textarea,select')&&stamp(fresh)!==stamp(d))await M.renderReview(exam_id,class_id,fresh);});
+    if(previousSection)document.querySelector('[data-section="'+previousSection+'"]')?.click();
+    previousStudents.forEach(id=>{const n=[...content.querySelectorAll('details[data-student]')].find(x=>x.dataset.student===id);if(n)n.open=true;});
     document.querySelector('#download-class').onclick = () => M.run(() => M.downloadPDF(exam_id,
       class_id));
   };
+  M.renderReview=M.openReview;
 })(window.MPS);

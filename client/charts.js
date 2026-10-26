@@ -1,12 +1,5 @@
-/* Small accessible SVG chart library, no external data or remote scripts. */
-(function(M) {
-  M.chart = (grades, title) => {
-    const max = Math.max(1, ...Object.values(grades)),
-      bars = Object.entries(grades).map(([g, n], i) => {
-        const h = 140 * n / max,
-          x = 45 + i * 75;
-        return `<rect x="${x}" y="${170-h}" width="42" height="${h}" fill="${g==='F'?'#172B4D':'#3563E9'}"/><text x="${x+21}" y="${160-h}" text-anchor="middle">${n}</text><text x="${x+21}" y="195" text-anchor="middle">${g}</text>`;
-      }).join('');
-    return `<svg viewBox="0 0 520 220" class="chart" role="img" aria-label="${M.esc(title)}"><title>${M.esc(title)}. ${Object.entries(grades).map(([g,n])=>`${g}: ${n}`).join(', ')}</title><line x1="25" y1="171" x2="500" y2="171" stroke="#dce1ea"/>${bars}</svg>`;
-  };
-})(window.MPS);
+/* Local SVG charts: focusable bars, exact tooltips, counts/percentages; no remote scripts. */
+(function(M){M.chart=(grades,title)=>{
+const values=Object.entries(grades),max=Math.max(1,...values.map(([,n])=>n)),total=values.reduce((n,[,v])=>n+v,0),colors=['#216c57','#35858c','#3563e9','#8c61bc','#bf8430','#bd4d57'];
+return `<div class="interactive-chart" data-total="${total}"><h4>${M.esc(title)}</h4><div class="chart-controls"><button type="button" data-chart-mode="count" aria-pressed="true">Bilangan</button><button type="button" data-chart-mode="percent" aria-pressed="false">Peratus</button></div><svg viewBox="0 0 520 220" class="chart" role="img" aria-label="${M.esc(title)}"><title>${M.esc(title)}</title>${values.map(([g,n],i)=>{const h=130*n/max,x=40+i*78;return `<g class="chart-bar" tabindex="0" role="img" aria-label="${M.esc(g)}: ${n}, ${total?(100*n/total).toFixed(1):0}%"><title>Gred ${M.esc(g)}: ${n} (${total?(100*n/total).toFixed(1):0}%)</title><rect x="${x}" y="${170-h}" width="45" height="${Math.max(2,h)}" rx="5" fill="${colors[i%6]}"/><text x="${x+22}" y="${158-h}" text-anchor="middle" data-chart-value="${n}">${n}</text><text x="${x+22}" y="196" text-anchor="middle">${M.esc(g)}</text></g>`;}).join('')}</svg><p class="muted">Sentuh atau tuding bar untuk nilai tepat. Peratus berdasarkan markah angka sahaja.</p></div>`;
+};})(window.MPS);

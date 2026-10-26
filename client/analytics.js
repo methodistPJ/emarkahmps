@@ -1,48 +1,28 @@
-(function(M) {
-  M.openAnalytics = async () => {
-    await M.guard();
-    const dash = await M.call('sessionContext');
-    document.querySelector('#content').innerHTML =
-      `<p class="eyebrow">ASSESSMENT ANALYTICS</p><h2>Understand <em>the progress.</em></h2><form id="analytics-form" class="toolbar"><label>Peperiksaan<select name="exam_id">${dash.exams.map(e=>`<option value="${M.esc(e.exam_id)}">${M.esc(e.exam_type+' '+e.academic_year)}</option>`).join('')}</select></label><label>Mod<select name="mode"><option value="CURRENT">Analisis Semasa</option><option value="OFFICIAL">Analisis Rasmi</option></select></label><label>Tahap<select name="stage"><option value="">Semua</option><option value="1">Tahap 1</option><option value="2">Tahap 2</option></select></label><label>Tahun<select name="year_level"><option value="">Semua</option>${[1,2,3,4,5,6].map(x=>`<option>${x}</option>`).join('')}</select></label><label>Subjek<input name="subject_code" placeholder="Semua / BM"></label><label>Kelas<select name="class_id"><option value="">Semua kelas dibenarkan</option>${dash.classes.map(c=>`<option value="${M.esc(c.class_id)}">${M.esc(c.class_name)}</option>`).join('')}</select></label><label>ID Murid<input name="student_id" placeholder="Semua murid dibenarkan"></label><button>Analisis</button></form><div class="toolbar"><label>Banding dengan<select id="compare-exam">${dash.exams.map(e=>`<option value="${M.esc(e.exam_id)}">${M.esc(e.exam_type+' '+e.academic_year)}</option>`).join('')}</select></label><button id="compare-action">Bandingkan UPSA / UASA</button><button id="analysis-print">Cetak Laporan</button></div><div id="analytics-output"></div>`;
-    let result, selection;
-    const table = (subjects) =>
-      `<div class="table-scroll"><table><thead><tr><th>Subjek</th><th>Angka</th><th>TH</th><th>TB</th><th>EMPTY</th><th>Purata</th><th>A / B / C / D / E / F</th></tr></thead><tbody>${subjects.map(s=>`<tr><td>${M.esc(s.subject)}</td><td>${s.stats.status.SCORED}</td><td>${s.stats.status.TH}</td><td>${s.stats.status.TB}</td><td>${s.stats.status.EMPTY}</td><td>${s.stats.average??'—'}</td><td>${Object.values(s.stats.grades).join(' / ')}</td></tr>`).join('')}</tbody></table></div>`;
-    const show = () => {
-      document.querySelector('#analytics-output').innerHTML =
-        `<h3>${result.mode==='OFFICIAL'?'Analisis Rasmi':'Analisis Semasa'} — ${M.esc(result.exam.exam_type)}</h3><p>${M.esc(result.summary.denominator)} Purata agregat ialah purata slot markah subjek, bukan purata individu murid.</p><div class="metrics"><div class="metric"><strong>${result.summary.status.SCORED}</strong><span>Rekod angka</span></div><div class="metric"><strong>${result.summary.average??'—'}</strong><span>Purata skor</span></div><div class="metric"><strong>${result.summary.status.EMPTY}</strong><span>Belum lengkap</span></div></div>${M.chart(result.summary.grades,'Taburan gred semua rekod dibenarkan')}${table(result.subjects)}<h3>Kelas & Subjek</h3>${table(result.groups.map(g=>({subject:g.class_name+' / '+g.subject,stats:g.stats})))}<div class="toolbar"><button id="export-summary">Eksport Ringkasan CSV</button><button id="export-marks">Eksport Dataset CSV</button></div><div class="grid">${result.subjects.map(s=>`<section><h3>${M.esc(s.subject)}</h3>${M.chart(s.stats.grades,'Taburan '+s.subject)}<p>${Object.entries(s.stats.percentages).map(([g,n])=>`${g}: ${n.toFixed(2)}%`).join(' · ')}</p></section>`).join('')}</div><div id="comparison"></div>`;
-      document.querySelector('#export-summary').onclick = () => M.download('analisis-ringkasan.csv', M
-        .csv([
-          ['Subjek', 'SCORED', 'TH', 'TB', 'EMPTY', 'Purata', 'A', 'B', 'C', 'D', 'E', 'F'], ...
-          result.subjects.map(s => [s.subject, s.stats.status.SCORED, s.stats.status.TH, s.stats
-            .status.TB, s.stats.status.EMPTY, s.stats.average, ...Object.values(s.stats.grades)
-          ])
-        ]));
-      document.querySelector('#export-marks').onclick = () => M.download('analisis-rekod.csv', M.csv([
-        ['student_id', 'name', 'class_id', 'subject', 'score', 'status', 'grade'], ...result
-        .dataset.map(r => [r.student_id, r.name, r.class_id, r.subject, r.score, r.status, r
-          .grade
-        ])
-      ]));
+(function(M){
+  M.openAnalytics=async()=>{
+    await M.guard();M.view('analytics');
+    const dash=await M.read('sessionContext'),admin=M.user.roles.includes('ADMINISTRATOR');M.teacherFocus=dash.teacher_exam_focus||'UASA';
+    const initial=M.currentExam(dash.exams);if(!initial){document.querySelector('#content').innerHTML='<h2>Analisis</h2><p>Peperiksaan belum disediakan.</p>';return;}
+    let selection={exam_id:initial.exam_id,mode:'CURRENT'},result;
+    const out=document.querySelector('#content');
+    out.innerHTML=`<p class="eyebrow">ANALITIK</p><h2>Analisis peperiksaan semasa</h2><p>${admin?'Pantau pengisian, penghantaran dan pencapaian sekolah.':'Gunakan analisis ini untuk mengenal pasti penguasaan murid, merancang intervensi dan menyokong pelaporan keberhasilan guru.'}</p><details id="analysis-filters" class="disclosure-card"><summary>Lihat Analisis Lain</summary><form id="analytics-form" class="toolbar"><label>Peperiksaan<select name="exam_id">${dash.exams.map(e=>`<option value="${M.esc(e.exam_id)}" ${e.exam_id===initial.exam_id?'selected':''}>${M.esc(e.exam_type+' '+e.academic_year)}</option>`).join('')}</select></label><label>Mod<select name="mode"><option value="CURRENT">Semasa</option><option value="OFFICIAL">Rasmi</option></select></label><label>Tahap<select name="stage"><option value="">Semua</option><option value="1">Tahap 1</option><option value="2">Tahap 2</option></select></label><label>Tahun<select name="year_level"><option value="">Semua</option>${[1,2,3,4,5,6].map(x=>`<option>${x}</option>`).join('')}</select></label><label>Subjek<input name="subject_code" placeholder="Semua / BM"></label><label>Kelas<select name="class_id"><option value="">Semua kelas dibenarkan</option>${dash.classes.map(c=>`<option value="${M.esc(c.class_id)}">${M.esc(c.class_name)}</option>`).join('')}</select></label><input type="hidden" name="student_id" value=""><button>Analisis</button></form><div class="toolbar"><label>Banding dengan<select id="compare-exam">${dash.exams.map(e=>`<option value="${M.esc(e.exam_id)}">${M.esc(e.exam_type+' '+e.academic_year)}</option>`).join('')}</select></label><button id="compare-action">Bandingkan UPSA / UASA</button><button id="analysis-print">Cetak Laporan</button></div></details>${M.refreshBar()}<div id="analytics-output" aria-live="polite">Memuatkan analisis…</div>`;
+    const completion=stats=>{const total=Object.values(stats?.status||{}).reduce((n,v)=>n+Number(v||0),0);return total?Math.round(100*(total-Number(stats.status.EMPTY||0))/total):0;};
+    const card=(code,stats)=>`<article class="analysis-card"><h4>${M.esc(M.subjectLabel(code))}</h4><div class="grade-chips">${['A','B','C','D','E','F'].map(g=>`<span class="grade-chip">${g}<strong>${stats.grades[g]||0}</strong></span>`).join('')}</div><p>Bermarkah: ${stats.status.SCORED||0} · TH: ${stats.status.TH||0} · Belum diisi: ${stats.status.EMPTY||0}</p><p>Purata: ${stats.average??'—'} · TB: ${stats.status.TB||0}</p></article>`;
+    const show=()=>{
+      const host=document.querySelector('#analytics-output');if(!host)return;
+      const opened=[...host.querySelectorAll('details[open][data-key]')].map(d=>d.dataset.key);
+      const classes=new Map();result.groups.forEach(g=>{if(!classes.has(g.class_id))classes.set(g.class_id,{name:g.class_name,groups:[],total:0,empty:0});const c=classes.get(g.class_id);c.groups.push(g);const st=g.entry||g.stats;c.total+=Object.values(st.status).reduce((n,v)=>n+Number(v||0),0);c.empty+=Number(st.status.EMPTY||0);});
+      const teachers=result.teacher_progress||[],entry=result.entry||result.summary;
+      host.innerHTML=`<h3>${M.esc(result.exam.exam_type+' '+result.exam.academic_year)} · ${result.mode==='OFFICIAL'?'Keputusan rasmi':'Analisis semasa'}</h3><div class="metrics"><div class="metric"><strong>${completion(entry)}%</strong><span>Pengisian · TB lalai dikecualikan</span></div><div class="metric"><strong>${result.summary.status.EMPTY||0}</strong><span>Belum diisi</span></div><div class="metric"><strong>${result.summary.average??'—'}</strong><span>Purata markah angka</span></div></div>${admin?`<details class="analytics-section disclosure-card" data-accordion data-key="teachers" open><summary>Kemajuan Guru · ${teachers.filter(t=>t.assignments===t.submitted).length}/${teachers.length} selesai hantar</summary><div class="table-scroll"><table><thead><tr><th>Guru</th><th>Pengisian</th><th>Penghantaran</th></tr></thead><tbody>${teachers.map(t=>`<tr><td>${M.esc(t.name)}<details><summary>${t.assignments} tugasan</summary>${t.details.map(a=>`<p>${M.esc(a.class_id+' · '+a.subject)}: ${a.completed}/${a.total} · ${M.esc(a.status)}</p>`).join('')}</details></td><td><progress max="100" value="${t.percentage||0}"></progress> ${t.percentage===null?'Belum disediakan':t.percentage+'%'}</td><td><span class="status-badge">${t.submitted===t.assignments?'Lengkap dihantar':t.submitted?'Sebahagian dihantar':t.completed?'Draf':'Belum mula'}</span><br>${t.submitted}/${t.assignments} dihantar</td></tr>`).join('')}</tbody></table></div></details>`:''}<details class="analytics-section disclosure-card" data-accordion data-key="subjects" ${admin?'':'open'}><summary>Analisis Subjek · ${result.subjects.length} subjek</summary><div class="compact-grid">${result.subjects.map(s=>card(s.subject,s.stats)).join('')}</div>${M.chart(result.summary.grades,'Taburan gred keseluruhan')}<label>Graf subjek<select id="subject-chart-choice"><option value="">Keseluruhan</option>${result.subjects.map(s=>`<option>${M.esc(s.subject)}</option>`).join('')}</select></label><div id="subject-chart"></div></details><details class="analytics-section disclosure-card" data-accordion data-key="classes"><summary>Kelas & Subjek · ${classes.size} kelas</summary><div class="compact-grid">${[...classes].map(([id,c])=>`<details class="disclosure-card" data-accordion data-key="class-${M.esc(id)}"><summary>${M.esc(c.name)}<p>${c.total?Math.round(100*(c.total-c.empty)/c.total):0}% pengisian</p><progress max="100" value="${c.total?100*(c.total-c.empty)/c.total:0}"></progress></summary><div class="compact-grid">${c.groups.map(g=>card(g.subject,g.stats)).join('')}</div>${M.chart(c.groups.reduce((sum,g)=>{Object.keys(sum).forEach(k=>sum[k]+=g.stats.grades[k]||0);return sum;},{A:0,B:0,C:0,D:0,E:0,F:0}),'Taburan '+c.name)}</details>`).join('')}</div><div class="progress-panel"><h4>Perbandingan pengisian kelas</h4>${[...classes.values()].map(c=>`<p>${M.esc(c.name)} · ${c.total?Math.round(100*(c.total-c.empty)/c.total):0}%</p><progress max="100" value="${c.total?100*(c.total-c.empty)/c.total:0}" title="${M.esc(c.name)}: ${c.total-c.empty}/${c.total}"></progress>`).join('')}</div></details>${admin?'<button id="export-summary" class="secondary">Eksport Ringkasan CSV</button><button id="export-marks" class="secondary">Eksport Dataset CSV</button>':''}<div id="comparison"></div><p class="muted">${M.esc(result.summary.denominator)} Keputusan semasa berubah sepanjang pengisian. Purata dikira daripada slot markah subjek.</p>`;
+      if(opened.length)host.querySelectorAll('details[data-key]').forEach(d=>d.open=opened.includes(d.dataset.key));
+      M.accordions(host);M.bindCharts(host);
+      host.querySelector('#subject-chart-choice').onchange=e=>{const sub=result.subjects.find(s=>s.subject===e.target.value),box=host.querySelector('#subject-chart');box.innerHTML=sub?M.chart(sub.stats.grades,'Taburan '+sub.subject):'';M.bindCharts(box);};
+      if(admin){host.querySelector('#export-summary').onclick=()=>M.download('analisis-ringkasan.csv',M.csv([['Subjek','A','B','C','D','E','F'],...result.subjects.map(s=>[s.subject,...Object.values(s.stats.grades)])]));host.querySelector('#export-marks').onclick=()=>M.download('analisis-rekod.csv',M.csv([['student_id','name','class_id','subject','score','status','grade'],...result.dataset.map(r=>[r.student_id,r.name,r.class_id,r.subject,r.score,r.status,r.grade])]));}
     };
-    document.querySelector('#analytics-form').onsubmit = e => {
-      e.preventDefault();
-      M.run(async () => {
-        selection = Object.fromEntries(new FormData(e.target));
-        selection.subject_code = selection.subject_code.toUpperCase().trim();
-        result = await M.call('analytics', selection);
-        show();
-      });
-    };
-    document.querySelector('#compare-action').onclick = () => M.run(async () => {
-      if (!selection) throw new Error('Jalankan analisis dahulu.');
-      const compared = await M.call('compare', {
-        ...selection,
-        left_exam: selection.exam_id,
-        right_exam: document.querySelector('#compare-exam').value
-      });
-      document.querySelector('#comparison').innerHTML =
-        `<h3>Perbandingan Peperiksaan</h3><p>${M.esc(compared.note)}</p><p>Purata kohort: ${compared.left.summary.average??'—'} → ${compared.right.summary.average??'—'}. ${compared.matched.length} padanan murid-subjek; purata perubahan padanan ${compared.matchedAverageChange??'—'}.</p><div class="table-scroll"><table><thead><tr><th>Murid</th><th>Subjek</th><th>Awal</th><th>Akhir</th><th>Perubahan</th></tr></thead><tbody>${compared.matched.map(r=>`<tr><td>${M.esc(r.name)}</td><td>${M.esc(r.subject)}</td><td>${r.left}</td><td>${r.right}</td><td>${r.change}</td></tr>`).join('')}</tbody></table></div>`;
-    });
-    document.querySelector('#analysis-print').onclick = () => window.print();
+    const load=async fresh=>{const r=await M.read('analytics',selection,!!fresh);if(M.viewName!=='analytics')return;result=r;show();};
+    document.querySelector('#analytics-form').onsubmit=e=>{e.preventDefault();selection=Object.fromEntries(new FormData(e.target));selection.subject_code=selection.subject_code.toUpperCase().trim();M.run(async()=>{await load(true);document.querySelector('#analysis-filters').open=false;});};
+    document.querySelector('#compare-action').onclick=()=>M.run(async()=>{const compared=await M.call('compare',{...selection,left_exam:selection.exam_id,right_exam:document.querySelector('#compare-exam').value});document.querySelector('#comparison').innerHTML=`<section class="analysis-card"><h3>Perbandingan Peperiksaan</h3><p>${M.esc(compared.note)}</p><p>Purata: ${compared.left.summary.average??'—'} → ${compared.right.summary.average??'—'} · ${compared.matched.length} padanan · Perubahan ${compared.matchedAverageChange??'—'}</p></section>`;});
+    document.querySelector('#analysis-print').onclick=()=>window.print();
+    await load(false);M.view('analytics',()=>load(true));M.bindRefresh();
   };
 })(window.MPS);

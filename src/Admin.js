@@ -12,6 +12,7 @@ function adminData_(db, u) {
     });
   out.settings = {
     year: config_().year,
+    teacher_exam_focus: teacherExamFocus_(db),
     school: config_().school,
     headmistress: config_().head
   };
@@ -329,4 +330,13 @@ function publicInfo_(db) {
       status: current.status
     } : null
   };
+}
+
+function teacherExamFocusSave_(db, u, p, req) {
+  admin_(u);
+  need_(['UPSA', 'UASA', 'ALL'].indexOf(p.exam_type) >= 0, 'Pilih UPSA, UASA atau semua peperiksaan.');
+  var key = 'teacher-exam-focus:' + config_().year, old = teacherExamFocus_(db);
+  db.setState(key, {exam_type: p.exam_type});
+  audit_(db, u, req, 'TEACHER_EXAM_FOCUS', '_STATE', key, {exam_type: old}, {exam_type: p.exam_type}, 'Paparan peperiksaan guru');
+  return {exam_type: p.exam_type};
 }

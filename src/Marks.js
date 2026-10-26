@@ -1,7 +1,5 @@
 function dashboard_(db, u) {
-  var exams = db.read('EXAMS').filter(function(e) {
-    return String(e.academic_year) === String(config_().year);
-  });
+  var exams = visibleExams_(db, u);
   var tasks = [];
   exams.forEach(function(e) {
     var assignments = role_(u, 'ADMINISTRATOR') ? db.read('CLASSES').filter(function(c) {

@@ -1,3 +1,17 @@
+/* School focus controls the teacher home and exam selector, never administrator history. */
+function teacherExamFocus_(db) {
+  var saved = db.state('teacher-exam-focus:' + config_().year);
+  return saved && ['UPSA', 'UASA', 'ALL'].indexOf(saved.exam_type) >= 0 ? saved.exam_type : 'UASA';
+}
+
+function visibleExams_(db, u) {
+  var focus = teacherExamFocus_(db);
+  return db.read('EXAMS').filter(function(e) {
+    return String(e.academic_year) === String(config_().year) &&
+      (role_(u, 'ADMINISTRATOR') || focus === 'ALL' || e.exam_type === focus);
+  });
+}
+
 /* Small authorized selectors: never cache permissions, sessions, exam states or active marks. */
 function examView_(e) {
   var out = {};
@@ -8,9 +22,7 @@ function examView_(e) {
 }
 
 function sessionContext_(db, u) {
-  var exams = db.read('EXAMS').filter(function(e) {
-    return String(e.academic_year) === String(config_().year);
-  });
+  var exams = visibleExams_(db, u);
   var assigned = db.read('ASSIGNMENTS').filter(function(a) {
     return a.user_id === u.user_id && bool_(a.active);
   });

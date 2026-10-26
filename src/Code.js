@@ -61,6 +61,7 @@ function dispatch_(envelope) {
       if (Object.prototype.hasOwnProperty.call(reads, a)) return reads[a](db, u, p);
       var writes = {
         schoolPreview:schoolPreview_,schoolCommit:schoolCommit_,schoolPrepare:schoolPrepare_,
+        teacherExamFocusSave: teacherExamFocusSave_,
         userSave: userSave_,
         entitySave: entitySave_,
         enrolmentEnd: enrolmentEnd_,

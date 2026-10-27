@@ -16,10 +16,10 @@
   },
   "rollback_warning": "Suspend all pending accounts before reverting to v1.0.2 auth.",
   "production_deployment_date": "2026-10-27",
-  "apps_script_version": 13,
-  "previous_apps_script_version": 12,
+  "apps_script_version": 14,
+  "previous_apps_script_version": 13,
   "live_verification": "Same production deployment URL. Credential/layout migration requires operator action. No marks reset.",
-  "ui_revision": "school-totals-teacher-progress-first-v5",
+  "ui_revision": "unified-portal-polish-v6",
   "participation_revision": "optional-student-fields-v1",
   "verification": "Core suites passed. Synthetic browser checked personal and administrator dashboards, teacher progress loading, entry summary and bottom actions; screenshot confirms red logout after CSS specificity correction. No mark reset.",
   "teacher_identifier_revision": "name-code-v1-legacy-six-digit-compatible"

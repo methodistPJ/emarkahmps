@@ -60,7 +60,7 @@
         });
         M.inflight = null;
         M.latestSave=new Date();
-        const saveButton=document.querySelector('#retry-save');if(saveButton)saveButton.textContent='Kemas kini';
+        const saveButton=document.querySelector('#retry-save');if(saveButton)saveButton.textContent='Simpan Draf';
         M.persist();
         M.saveLabel(M.pending.size ? 'Terdapat perubahan belum dihantar.' :
           'Disimpan pada '+new Date().toLocaleString('ms-MY')+'.');
@@ -121,7 +121,7 @@
     const locked=!!data.metadata?.finalized_at||data.submission?.submission_status!=='DRAFT';
     const content = document.querySelector('#content');
     content.innerHTML =
-      `<p class="eyebrow">${M.esc(data.class?.class_name||'Kelas')} · ${M.esc(data.exam?data.exam.exam_type+' '+data.exam.academic_year:'Pengisian markah')}</p><h2>${M.esc(subjectName)} <em>/ Pengisian</em></h2><div id="entry-summary" class="entry-summary"></div><p class="save-status" id="save-status" role="status">${M.pending.size||M.inflight?'Perubahan tempatan dipulihkan. Tekan Simpan Markah.':'Semua perubahan disimpan.'}</p><div id="conflict" class="conflict" hidden></div><div class="toolbar"><label>Cari murid<input id="mark-search" type="search"></label><label>Status<select id="mark-filter"><option value="">Semua</option><option value="EMPTY">Belum diisi</option><option value="TB">TB</option><option value="TH">TH</option><option value="SCORED">Markah angka</option></select></label></div><p>${locked?'Subjek dikunci selepas penghantaran atau pemuktamadan.':'Masukkan 0–100, TB atau TH. Tekan Enter atau anak panah bawah untuk murid seterusnya.'}</p><div class="table-scroll"><table><thead><tr><th>Bil.</th><th>Nama Murid</th><th>Markah / Status</th><th>Gred</th></tr></thead><tbody id="marks-body"></tbody></table></div><p class="action-help">Simpan Markah menyimpan draf. Semak &amp; Sahkan menghantar markah untuk semakan guru kelas.</p><div class="mark-actions"><button id="retry-save" ${locked?'disabled':''}>${data.marks.some(m=>Number(m.record_version)>1)?'Kemas kini':'Simpan Markah'}</button><button id="submit-marks">${data.submission?.submission_status!=='DRAFT'?'Sahkan Semula':'Semak & Sahkan'}</button></div><div id="submission-review"></div><p class="confirmed-banner" ${M.confirmation(data.verification)?'':'hidden'}>${M.confirmation(data.verification)}</p>${M.refreshBar()}`;
+      `<p class="eyebrow">${M.esc(data.class?.class_name||'Kelas')} · ${M.esc(data.exam?data.exam.exam_type+' '+data.exam.academic_year:'Pengisian markah')}</p><h2>${M.esc(subjectName)} <em>/ Pengisian</em></h2>${M.refreshBar()}<div id="entry-summary" class="entry-summary"></div><p class="save-status" id="save-status" role="status">${M.pending.size||M.inflight?'Perubahan tempatan dipulihkan. Tekan Simpan Draf.':'Semua perubahan disimpan.'}</p><div id="conflict" class="conflict" hidden></div><div class="toolbar"><label>Cari murid<input id="mark-search" type="search"></label><label>Status<select id="mark-filter"><option value="">Semua</option><option value="EMPTY">Belum diisi</option><option value="TB">TB</option><option value="TH">TH</option><option value="SCORED">Markah angka</option></select></label></div><p>${locked?'Subjek dikunci selepas penghantaran atau pemuktamadan.':'Masukkan 0–100, TB atau TH. Tekan Enter atau anak panah bawah untuk murid seterusnya.'}</p><div class="table-scroll"><table><thead><tr><th>Bil.</th><th>Nama Murid</th><th>Markah / Status</th><th>Gred</th></tr></thead><tbody id="marks-body"></tbody></table></div><p class="action-help">Simpan Draf menyimpan perubahan. Hantar Markah membuka semakan akhir sebelum penghantaran.</p><div class="mark-actions"><button id="retry-save" ${locked?'disabled':''}>Simpan Draf</button><button id="submit-marks">${data.submission?.submission_status!=='DRAFT'?'Sahkan Semula':'Hantar Markah'}</button></div><p class="submission-banner confirmed-banner" ${data.submission?.submitted_at?'':'hidden'}>Markah telah dihantar pada ${M.date(data.submission?.submitted_at)}.</p><p class="confirmed-banner" ${M.confirmation(data.verification)?'':'hidden'}>${M.confirmation(data.verification)}</p>`;
     const render = () => {
       const filled=M.currentMarks.filter(m=>{const v=M.rawDrafts.get(m.mark_id)??M.pending.get(m.mark_id)?.value??M.inflight?.payload.changes.find(c=>c.mark_id===m.mark_id)?.value??M.display(m);return String(v).trim()!==''&&M.grade(v,data.rules)!=='Tidak sah';}).length;document.querySelector('#entry-summary').textContent=M.currentMarks.length+' murid · '+filled+' diisi · '+(M.currentMarks.length-filled)+' belum diisi';
       const search = document.querySelector('#mark-search').value.toLowerCase(),
@@ -164,33 +164,26 @@
         }
       }
     };
-    document.querySelector('#retry-save').onclick = () => M.feedback('Menyimpan markah…',async()=>{await M.flush();document.querySelector('#retry-save').textContent='Kemas kini';},'Markah berjaya disimpan');
-    document.querySelector('#submit-marks').onclick = () => M.feedback('Menyemak markah…',async () => {
+    document.querySelector('#retry-save').onclick = () => M.feedback('Menyimpan markah…',async()=>{await M.flush();document.querySelector('#retry-save').textContent='Simpan Draf';},'Markah berjaya disimpan');
+    document.querySelector('#submit-marks').onclick = () => M.run(async () => {
       if(M.activeCorruptKey())throw new Error('Pulihkan atau eksport draf rosak dahulu.');
-    if (M.invalid.size) throw new Error('Betulkan nilai tidak sah dahulu.');
-      await M.flush();
-      const latest = await M.call('marksGet', M.context),
-        count = {
-          SCORED: 0,
-          TH: 0,
-          TB: 0,
-          EMPTY: 0
-        };
-      latest.marks.forEach(m => count[m.mark_status]++);
-      document.querySelector('#submission-review').innerHTML =
-        `<section class="panel"><h3>Semakan Penghantaran</h3><p>${latest.marks.length} murid · Angka ${count.SCORED} · TH ${count.TH} · TB ${count.TB} · EMPTY ${count.EMPTY}</p><label ${count.TB ? '' : 'hidden'}><input type="checkbox" id="tb-ack"> Saya telah menyemak semua status TB${count.TB===latest.marks.length?' — SEMUA MURID TB':''}.</label><button id="confirm-submit" ${count.EMPTY?'disabled':''}>Sahkan Penghantaran ${M.esc(subjectName)}</button></section>`;
-      document.querySelector('#confirm-submit').onclick = () => M.feedback('Mengesahkan penghantaran…',async () => {
-        const ack = document.querySelector('#tb-ack').checked;
-        await M.call('submit', {
-          ...M.context,
-          tb_acknowledged: ack,
-          all_tb_acknowledged: ack,
-          versions: latest.marks.map(m => [m.mark_id, Number(m.record_version)])
-        }, true);
-        await M.openMarks(exam_id, class_id, subject_code);
-        M.notice('Markah dihantar dan dikunci.');
-      },'Markah berjaya disahkan');
-    },'Semakan sedia — tutup untuk sahkan penghantaran');
+      if(M.invalid.size)throw new Error('Betulkan nilai tidak sah dahulu.');
+      let latest;
+      M.showLoader('Menyediakan semakan penghantaran…');
+      try {await M.flush();latest=await M.call('marksGet',nextContext);} finally {await M.hideLoader();}
+      const count={SCORED:0,TH:0,TB:0,EMPTY:0};latest.marks.forEach(m=>count[m.mark_status]++);
+      document.querySelector('#submission-dialog')?.remove();
+      const dialog=document.createElement('dialog');dialog.id='submission-dialog';dialog.setAttribute('aria-labelledby','submission-title');
+      dialog.innerHTML=`<p class="eyebrow">SEMAKAN AKHIR</p><h3 id="submission-title">${M.esc(subjectName)}</h3><p>${latest.marks.length} murid · Markah diisi ${count.SCORED} · TH ${count.TH} · TB ${count.TB} · Belum diisi ${count.EMPTY}</p>${count.EMPTY?'<p class="attention-banner">Lengkapkan semua markah sebelum menghantar.</p>':'<p>Selepas dihantar, markah dikunci untuk semakan guru kelas.</p>'}<label ${count.TB?'':'hidden'}><input type="checkbox" id="tb-ack"> Saya telah menyemak semua status TB${count.TB===latest.marks.length?' — semua murid TB':''}.</label><div class="mark-actions"><button type="button" id="submission-back">Kembali</button><button type="button" id="confirm-submit" ${count.EMPTY||count.TB?'disabled':''}>Sahkan &amp; Hantar</button></div>`;
+      document.body.append(dialog);dialog.showModal();
+      const confirmButton=dialog.querySelector('#confirm-submit');
+      dialog.querySelector('#tb-ack').onchange=e=>{confirmButton.disabled=!!count.EMPTY||!!count.TB&&!e.target.checked;};
+      dialog.querySelector('#submission-back').onclick=()=>{dialog.close();document.querySelector('#submit-marks')?.focus();dialog.remove();};
+      confirmButton.onclick=()=>{const ack=dialog.querySelector('#tb-ack').checked;dialog.close();dialog.remove();M.feedback('Menghantar markah…',async()=>{
+        await M.call('submit',{...nextContext,tb_acknowledged:ack,all_tb_acknowledged:ack,versions:latest.marks.map(m=>[m.mark_id,Number(m.record_version)])},true);
+        await M.openMarks(exam_id,class_id,subject_code);
+      },'Markah berjaya dihantar');};
+    });
     M.view('marks',async()=>{const fresh=await M.call('marksGet',nextContext);const stamp=x=>JSON.stringify([x.marks.map(m=>[m.mark_id,m.record_version]),x.submission,x.verification,x.metadata]);if(M.viewName==='marks'&&JSON.stringify(M.context)===JSON.stringify(nextContext)&&!M.dirty()&&!document.activeElement?.matches('input,textarea,select')&&stamp(fresh)!==stamp(M.viewPayload))await M.renderMarks(exam_id,class_id,subject_code,fresh);});
     M.bindRefresh();
   };

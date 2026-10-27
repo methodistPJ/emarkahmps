@@ -22,6 +22,7 @@
     M.refreshView=async()=>{if(refreshBusy||document.hidden||!M.token||M.dirty()||document.querySelector('dialog[open]')||document.querySelector('#mps-loader:not([hidden])')||document.activeElement?.matches('input,textarea,select'))return;refreshBusy=true;try{const version=await M.call('revision');if(M.lastRevision===version.revision)return;await refresh();M.lastRevision=version.revision;stamp();}catch(e){if(e.code==='SESSION')M.stopRefresh();}finally{refreshBusy=false;}};
     stamp();viewTimer=setInterval(()=>M.refreshView(),45000);
   };
+  M.statusLabel=s=>({DRAFT:'Draf',OPEN:'Dibuka',CLOSED:'Ditutup',FINALIZED:'Dimuktamadkan',SUBMITTED:'Dihantar',AMENDED:'Dikemas kini',EMPTY:'Belum diisi',SCORED:'Markah diisi',NONE:'Belum dijana',AWAITING_ADMIN:'Menunggu pentadbir',QUEUED:'Dalam giliran',PROCESSING:'Sedang diproses',COMPLETE:'Selesai',FAILED:'Gagal'}[s]||s);
   M.refreshBar=()=>'<div class="refresh-bar"><small id="view-updated">Data semasa</small><button type="button" id="view-refresh" class="secondary">Muat semula</button></div>';
   M.bindRefresh=()=>{const b=document.querySelector('#view-refresh');if(b)b.onclick=()=>M.run(async()=>{await M.guard();M.invalidateViews();await M.refreshView?.();});};
   M.prefetchRole=async()=>{const epoch=generation;try{const context=await M.read('sessionContext');if(epoch!==generation||!M.token)return;M.teacherFocus=context.teacher_exam_focus||'UASA';const e=M.currentExam(context.exams);if(e&&!document.hidden)await M.read('analytics',{exam_id:e.exam_id,mode:'CURRENT'});}catch(_){} };

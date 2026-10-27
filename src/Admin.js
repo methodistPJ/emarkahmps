@@ -303,7 +303,7 @@ function prepareExam_(db, u, p, req) {
 }
 
 function publicInfo_(db) {
-  var counts = bool_(PropertiesService.getScriptProperties().getProperty('PUBLIC_COUNTS'));
+  var counts = true; // School-approved aggregate totals; no pupil records returned.
   var year = config_().year,
     ex = db.read('EXAMS').filter(function(e) {
       return String(e.academic_year) === String(year);

@@ -4,7 +4,7 @@ const document={get hidden(){return hidden;},get activeElement(){return {matches
 let timer;const M={token:'one',user:{user_id:'one'},pending:new Map(),invalid:new Set(),remarkPending:new Map(),call:async(a,p,w)=>{calls.push({a,w});if(a==='slow')return new Promise(r=>resolveRead=r);return structuredClone(cacheResponse);}};
 const c=vm.createContext({window:{MPS:M},document,Map,Set,Date,JSON,Error,Promise,structuredClone,setInterval:fn=>(timer=fn,1),clearInterval:()=>{},console});vm.runInContext(fs.readFileSync(__dirname+'/../client/experience.js','utf8'),c);
 (async()=>{
-assert.equal(M.limitMark('101'),'100');assert.equal(M.limitMark('999999999'),'100');assert.equal(M.limitMark('TH'),'TH');assert.equal(M.limitMark('100'),'100');
+assert.equal(M.limitMark('233','23'),'23');assert.equal(M.limitMark('101','10'),'10');assert.equal(M.limitMark('999999999',''), '');assert.equal(M.limitMark('0',''),'0');assert.equal(M.limitMark('TH'),'TH');assert.equal(M.limitMark('100'),'100');
 const a=await M.read('dashboard');a.n=99;assert.equal((await M.read('dashboard')).n,1);assert.equal(calls.length,1);
 await M.call('saveMarks',{},true);await M.read('dashboard');assert.equal(calls.length,3);
 M.token='two';await M.read('dashboard');assert.equal(calls.length,4);

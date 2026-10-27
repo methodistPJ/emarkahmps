@@ -29,3 +29,9 @@ Guru kelas: semak matriks, subjek belum dihantar, murid EMPTY dan ulasan wajib. 
 Semak Kesiapsiagaan sebelum SAHKAN & JANA SLIP. Backend menyemak penghantaran, markah, ulasan, coverage dan revision sekali lagi. Selaraskan draf subjek lain dalam tab sama dahulu; tab/peranti lain juga perlu disemak oleh guru sendiri.
 
 PDF dijana di latar belakang: QUEUED → PROCESSING → COMPLETED atau FAILED. Bilangan snapshot diproses ialah kemajuan sebenar, bukan peratus jaminan. Refresh semakan untuk status baharu. Muat turun PDF gabungan kelas terkini selepas COMPLETED. Jika FAILED/lapuk, hubungi pentadbir; jangan guna slip revision lama selepas pembetulan rasmi.
+
+
+## Login emel dan PIN enam digit
+Selepas pentadbir mengaktifkan migrasi akaun, gunakan emel yang diisi dalam tab USERS. Akaun belum aktif menggunakan BBB8307, kemudian wajib menetapkan dan mengesahkan PIN enam digit. Akaun yang telah aktif menggunakan credential semasa sekali sebelum menetapkan PIN enam digit. Sifar di hadapan PIN dikekalkan. PIN disimpan sebagai hash, bukan teks biasa.
+
+Guru kelas mengesahkan kelas selepas semua subjek dihantar. Penjanaan dan muat turun PDF kini diurus oleh pentadbir sahaja.

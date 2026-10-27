@@ -34,3 +34,12 @@ This is a locally tested release candidate, not a claim of new live Google integ
 - Dialog menyimpan/mengesahkan mengunci interaksi; autosimpan kekal dengan indikator ringan. Markah melebihi 100 dihadkan kepada 100 pada input/tampalan; semakan server dikekalkan.
 - Pramuat hanya konteks, dashboard dan analitik semasa dalam memori sesi (20 saat, maksimum lapan entri). Markah/semakan kelas dimuat apabila dibuka. Refresh latar 45 saat ketika tab aktif dan tiada input/draf/dialog; tidak bertindih atau menimpa input.
 - Tiada reset markah, murid, guru, tarikh peperiksaan atau PIN melalui kemas kini paparan ini.
+
+
+### Email/PIN and administrator PDF update — 27 October 2026
+
+The existing USERS table supports the legacy layout with email in K and the upgraded layout with email replacing the unused alias column in D. All account IDs, credentials, assignments and marks are preserved. Administrators review **Akaun Emel & PIN**, then explicitly apply the migration; that operator action sets the two selected administrator PIN verifiers, enables first-login six-digit PIN enrollment, removes the physical alias column, and invalidates affected sessions. Existing activated users authenticate with their existing credential once before setting a six-digit PIN. Pending accounts use the configured temporary credential BBB8307. Email remains directly editable plain text; authentication_data remains a hash/verifier. Never edit authentication_data manually.
+
+Administrators with teaching assignments enter their personal subject/class dashboard first and switch to **Pentadbiran Sekolah** when needed. The welcome greeting uses the account's name. Logout is red. Class finalization freezes results with AWAITING_ADMIN; only an administrator can queue or download a PDF. Existing snapshot revision and hash validation remain in place.
+
+Stable authorized reads use optimistic generation checks and do not hold the shared write lock. Responses overlapping a writer or recovery are discarded and retried under the existing lock. Journalled writes remain serialized. Active-view background refresh first checks a lightweight authenticated revision and only fetches changed data; manual refresh invalidates that marker. Input/draft/focus guards remain enabled. These are tested protocol changes, not a claim of live multi-user latency figures.

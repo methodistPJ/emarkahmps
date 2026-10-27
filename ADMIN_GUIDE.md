@@ -30,3 +30,15 @@ Jika RECOVERY_ROW kekal atau header rosak, hentikan penulisan pengguna dan buat 
 Buat backup workbook penuh dan sumber sebelum setiap exam, perubahan utama dan arkib; backup harian pada hari pengisian aktif boleh dilakukan oleh penyelaras tanpa menambah trigger automatik pakej ini. Backup penuh mengandungi credential hashes: hadkan akses. Uji pemulihan pada salinan, bukan live.
 
 Arkib hanya selepas kedua-dua exam lengkap mengikut backend, PDF disahkan dan tiada draf guru tertinggal. Pantau hingga COMPLETED dan semak manifest hash. Tahun baharu mengekalkan student/user IDs serta kod guru, tetapi tidak mempromosikan kelas, enrolmen atau tugasan secara automatik. Import senarai sebenar dan semak dahulu. Jangan jadikan arkib yang meredaksi credentials sebagai satu-satunya backup operasi.
+
+
+## Kemas kini 27 Oktober 2026: emel dan PIN
+
+1. Log masuk menggunakan emel dalam USERS dan kelayakan sedia ada.
+2. Buka Pentadbiran Sekolah → Urus Sekolah → Akaun Emel & PIN.
+3. Semak pelan akaun, kemudian pentadbir sendiri menekan Terapkan Migrasi & Tetapkan PIN Pentadbir. Operasi ini menetapkan PIN Muhaimin dan Aliyah kepada 000000 tanpa perubahan wajib, mengaktifkan polisi PIN enam digit untuk guru lain, dan menggantikan kolum alias dengan emel. Markah tidak direset.
+4. Log masuk semula menggunakan emel dan PIN. Akaun guru yang belum diaktifkan menggunakan BBB8307 sekali, kemudian menetapkan PIN enam digit. Guru yang sudah aktif menggunakan kelayakan lama sekali sebelum menetapkan PIN enam digit.
+
+Selepas migrasi, ubah emel terus dalam kolum email pada tab USERS di spreadsheet operasi; emel disimpan sebagai teks dan PIN sebagai hash dalam authentication_data. Jangan ubah user_id atau hash secara manual. Menu ini juga menyediakan reset PIN sementara untuk akaun terpilih.
+
+Guru kelas mengesahkan kelas selepas semua subjek dihantar. Hanya pentadbir menjana dan memuat turun PDF. Admin yang mengajar melihat Tugasan Saya dahulu dan boleh beralih kepada Pentadbiran Sekolah. Bacaan stabil tidak menunggu kunci tulis global; semakan perubahan ringan mendahului muat semula latar.

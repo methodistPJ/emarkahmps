@@ -63,7 +63,7 @@
         const saveButton=document.querySelector('#retry-save');if(saveButton)saveButton.textContent='Kemaskini';
         M.persist();
         M.saveLabel(M.pending.size ? 'Terdapat perubahan belum dihantar.' :
-          'Semua perubahan disimpan.');
+          'Disimpan pada '+new Date().toLocaleString('ms-MY')+'.');
       } catch (e) {
         M.saveLabel(e.code === 'NETWORK' ? 'Sambungan terputus. Perubahan belum disimpan.' :
           'Gagal menyimpan.');
@@ -121,8 +121,9 @@
     const locked=!!data.metadata?.finalized_at||data.submission?.submission_status!=='DRAFT';
     const content = document.querySelector('#content');
     content.innerHTML =
-      `<p class="eyebrow">SMART MARKS ENTRY</p><h2>${M.esc(subjectName)} <em>/ Pengisian</em></h2><p class="save-status" id="save-status" role="status">${M.pending.size||M.inflight?'Perubahan tempatan dipulihkan. Tekan Simpan Markah.':'Semua perubahan disimpan.'}</p><div id="conflict" class="conflict" hidden></div><div class="toolbar"><label>Cari murid<input id="mark-search" type="search"></label><label>Status<select id="mark-filter"><option value="">Semua</option><option value="EMPTY">Belum diisi</option><option value="TB">TB</option><option value="TH">TH</option><option value="SCORED">Markah angka</option></select></label></div><p>${locked?'Subjek dikunci selepas penghantaran atau pemuktamadan.':'Masukkan 0–100, TB atau TH. Enter atau tekan arrow down untuk murid seterusnya.'}</p><div class="table-scroll"><table><thead><tr><th>Bil.</th><th>Nama Murid</th><th>Markah / Status</th><th>Gred</th></tr></thead><tbody id="marks-body"></tbody></table></div><div class="mark-actions"><button id="retry-save" ${locked?'disabled':''}>${data.marks.some(m=>Number(m.record_version)>1)?'Kemaskini':'Simpan Markah'}</button><button id="submit-marks">${data.submission?.submission_status!=='DRAFT'?'Sahkan Semula':'Semak & Sahkan'}</button></div><div id="submission-review"></div><p class="confirmed-banner" ${M.confirmation(data.verification)?'':'hidden'}>${M.confirmation(data.verification)}</p>${M.refreshBar()}`;
+      `<p class="eyebrow">${M.esc(data.class?.class_name||'Kelas')} · ${M.esc(data.exam?data.exam.exam_type+' '+data.exam.academic_year:'Pengisian markah')}</p><h2>${M.esc(subjectName)} <em>/ Pengisian</em></h2><div id="entry-summary" class="entry-summary"></div><p class="save-status" id="save-status" role="status">${M.pending.size||M.inflight?'Perubahan tempatan dipulihkan. Tekan Simpan Markah.':'Semua perubahan disimpan.'}</p><div id="conflict" class="conflict" hidden></div><div class="toolbar"><label>Cari murid<input id="mark-search" type="search"></label><label>Status<select id="mark-filter"><option value="">Semua</option><option value="EMPTY">Belum diisi</option><option value="TB">TB</option><option value="TH">TH</option><option value="SCORED">Markah angka</option></select></label></div><p>${locked?'Subjek dikunci selepas penghantaran atau pemuktamadan.':'Masukkan 0–100, TB atau TH. Enter atau tekan arrow down untuk murid seterusnya.'}</p><div class="table-scroll"><table><thead><tr><th>Bil.</th><th>Nama Murid</th><th>Markah / Status</th><th>Gred</th></tr></thead><tbody id="marks-body"></tbody></table></div><p class="action-help">Simpan Markah menyimpan draf. Semak &amp; Sahkan menghantar markah untuk semakan guru kelas.</p><div class="mark-actions"><button id="retry-save" ${locked?'disabled':''}>${data.marks.some(m=>Number(m.record_version)>1)?'Kemaskini':'Simpan Markah'}</button><button id="submit-marks">${data.submission?.submission_status!=='DRAFT'?'Sahkan Semula':'Semak & Sahkan'}</button></div><div id="submission-review"></div><p class="confirmed-banner" ${M.confirmation(data.verification)?'':'hidden'}>${M.confirmation(data.verification)}</p>${M.refreshBar()}`;
     const render = () => {
+      const filled=M.currentMarks.filter(m=>{const v=M.rawDrafts.get(m.mark_id)??M.pending.get(m.mark_id)?.value??M.inflight?.payload.changes.find(c=>c.mark_id===m.mark_id)?.value??M.display(m);return String(v).trim()!==''&&M.grade(v,data.rules)!=='Tidak sah';}).length;document.querySelector('#entry-summary').textContent=M.currentMarks.length+' murid · '+filled+' diisi · '+(M.currentMarks.length-filled)+' belum diisi';
       const search = document.querySelector('#mark-search').value.toLowerCase(),
         filter = document.querySelector('#mark-filter').value;
       document.querySelector('#marks-body').innerHTML = M.currentMarks.map((m, i) => {
@@ -148,6 +149,7 @@
       }
       M.invalid.delete(m.mark_id);M.rawDrafts.delete(m.mark_id);e.target.removeAttribute('aria-invalid');
       M.queue(m, e.target.value);
+      const filled=M.currentMarks.filter(row=>{const v=M.pending.get(row.mark_id)?.value??M.inflight?.payload.changes.find(c=>c.mark_id===row.mark_id)?.value??M.display(row);return String(v).trim()!==''&&M.grade(v,data.rules)!=='Tidak sah';}).length;document.querySelector('#entry-summary').textContent=M.currentMarks.length+' murid · '+filled+' diisi · '+(M.currentMarks.length-filled)+' belum diisi';
     };
     document.querySelector('#marks-body').onkeydown = e => {
       if (['Enter', 'ArrowDown', 'ArrowUp'].includes(e.key)) {

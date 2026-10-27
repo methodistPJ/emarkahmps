@@ -18,7 +18,7 @@
   M.view=(name,refresh)=>{
     M.stopRefresh();M.viewName=name;
     if(!refresh)return;
-    const stamp=()=>{const n=document.querySelector('#view-updated');if(n)n.textContent='Dikemas kini '+M.date(new Date().toISOString());};
+    const stamp=()=>{const n=document.querySelector('#view-updated');if(n)n.textContent='Data dimuat semula '+M.date(new Date().toISOString());};
     M.refreshView=async()=>{if(refreshBusy||document.hidden||!M.token||M.dirty()||document.querySelector('dialog[open]')||document.querySelector('#mps-loader:not([hidden])')||document.activeElement?.matches('input,textarea,select'))return;refreshBusy=true;try{const version=await M.call('revision');if(M.lastRevision===version.revision)return;await refresh();M.lastRevision=version.revision;stamp();}catch(e){if(e.code==='SESSION')M.stopRefresh();}finally{refreshBusy=false;}};
     stamp();viewTimer=setInterval(()=>M.refreshView(),45000);
   };

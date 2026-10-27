@@ -47,6 +47,7 @@ function sessionContext_(db, u) {
 }
 
 function pdfReference_(db, u, p) {
+  admin_(u);
   readable_(db, u, p.exam_id, p.class_id);
   var m = metadata_(db, p.exam_id, p.class_id);
   need_(m && m.finalized_at && m.pdf_status === 'COMPLETED' && Number(m.pdf_revision) === Number(m.class_finalization_revision), 'PDF rasmi belum tersedia atau sudah lapuk.');

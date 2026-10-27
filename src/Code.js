@@ -23,7 +23,8 @@ function rpc(envelope) {
 function dispatch_(envelope) {
   try {
     need_(envelope && typeof envelope.action === 'string', 'Permintaan tidak sah.');
-    var data = locked_(function(db) {
+    var safeReads=['dashboard','personalDashboard','analytics','compare','marksGet','reviewGet','sessionContext','adminData','health','schoolReadiness','revision','accountsPlan'];
+    var data = (safeReads.indexOf(envelope.action)>=0?consistentRead_:locked_)(function(db) {
       var p = envelope.payload || {},
         a = envelope.action;
       if (a === 'public') return publicInfo_(db);
@@ -31,11 +32,13 @@ function dispatch_(envelope) {
       if (a === 'login') return login_(db, p);
       if(a==='activationBegin')return activationBegin_(db,p);
       if(a==='activationFinish')return activationFinish_(db,p);
+      if(a==='pinChangeFinish')return pinChangeFinish_(db,p);
       var u = session_(db, envelope.token);
       if(a==='issueActivation')return issueActivation_(db,u,p,envelope.request_id);
       var reads = {
         schoolReadiness:schoolReadiness_,schoolPreviewDetails:schoolPreviewDetails_,
         dashboard: dashboard_,
+        personalDashboard:personalDashboard_,revision:revision_,accountsPlan:accountsPlan_,
         marksGet: marksGet_,
         reviewGet: reviewGet_,
         adminData: adminData_,
@@ -62,6 +65,7 @@ function dispatch_(envelope) {
       var writes = {
         schoolPreview:schoolPreview_,schoolCommit:schoolCommit_,schoolPrepare:schoolPrepare_,
         teacherExamFocusSave: teacherExamFocusSave_,
+        accountsUpgrade:accountsUpgrade_,resetPin:resetPin_,
         userSave: userSave_,
         entitySave: entitySave_,
         enrolmentEnd: enrolmentEnd_,
@@ -92,6 +96,7 @@ function dispatch_(envelope) {
         },
         repeat = replay_(db, envelope.request_id, u, payload);
       if (repeat) {
+        if(a==='accountsUpgrade')accountsLayout_(db.book);
         if (a === 'newYear' && repeat.value.activate) activateYear_(repeat.value);
         return repeat.value;
       }
@@ -100,6 +105,7 @@ function dispatch_(envelope) {
         'Tahun sedang diarkibkan. Tunggu arkib selesai.');
       var result = writes[a](db, u, p, envelope.request_id);
       var committed = commit_(db, envelope.request_id, u, payload, result);
+      if(a==='accountsUpgrade')accountsLayout_(db.book);
       if(a==='schoolCommit')schoolApplyProfile_(db);
       if (a === 'newYear' && committed.activate) activateYear_(committed);
       return committed;

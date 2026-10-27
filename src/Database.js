@@ -30,12 +30,15 @@ Db_.prototype.decode = function(name, row, index) {
   SCHEMA_[name].forEach(function(k, i) {
     o[k] = row[i] instanceof Date ? row[i].toISOString() : row[i];
   });
+  if(name === 'USERS') { o.email = String(this.userEmailLayout ? row[3] || '' : row[10] || '').trim().toLowerCase(); if(this.userEmailLayout)o.account_alias=''; }
   return o;
 };
 Db_.prototype.validate = function(name) {
   if (this.validated[name]) return;
   var h = SCHEMA_[name];
-  need_(JSON.stringify(diagnosticRead_(this.sheet(name).getRange(1, 1, 1, h.length))[0]) === JSON.stringify(h), 'Header database berubah: ' + name);
+  var actual=diagnosticRead_(this.sheet(name).getRange(1,1,1,name==='USERS'?11:h.length))[0];
+  if(name==='USERS'){this.userEmailLayout=actual[3]==='email';this.userEmailExtra=!this.userEmailLayout&&actual[10]==='email';if(this.userEmailLayout)actual[3]='account_alias';actual=actual.slice(0,h.length);}
+  need_(JSON.stringify(actual) === JSON.stringify(h), 'Header database berubah: ' + name);
   this.validated[name] = true;
 };
 Db_.prototype.overlay = function(name, rows) {
@@ -51,7 +54,7 @@ Db_.prototype.read = function(name) {
     var last = this.sheet(name).getLastRow(),
       self = this;
     this.ends[name] = Math.max(this.ends[name] || 0, last);
-    this.cache[name] = last < 2 ? [] : diagnosticRead_(this.sheet(name).getRange(2, 1, last - 1, SCHEMA_[name].length)).map(function(row, i) {
+    this.cache[name] = last < 2 ? [] : diagnosticRead_(this.sheet(name).getRange(2, 1, last - 1, SCHEMA_[name].length + (name==='USERS'&&this.userEmailExtra?1:0))).map(function(row, i) {
       return self.decode(name, row, i + 2);
     });
     Object.keys(this.staged).forEach(function(k) {
@@ -77,10 +80,14 @@ Db_.prototype.put = function(name, obj) {
     obj._row = row;
   }
   need_(Number.isInteger(row) && row >= 2, 'Koordinat rekod tidak sah.');
+  this.validate(name);
+  if(name==='USERS'&&obj.email===undefined){var existing=this.read(name).find(function(u){return u.user_id===obj.user_id;});obj.email=existing?existing.email:'';}
+  var self=this;
   var values = SCHEMA_[name].map(function(k) {
-    var v = obj[k];
+    var v = name==='USERS'&&self.userEmailLayout&&k==='account_alias'?obj.email:obj[k];
     return v === undefined || v === null ? '' : typeof v === 'object' ? JSON.stringify(v) : v;
   });
+  if(name==='USERS'&&this.userEmailExtra)values.push(obj.email||'');
   this.staged[name + ':' + row] = {
     table: name,
     row: row,
@@ -163,7 +170,9 @@ function writePlan_(book, plan) {
       }),
       s = book.getSheetByName(name);
 
-    ensureGrid_(s, rows[rows.length - 1].row, SCHEMA_[name].length);
+    var physicalWidth=rows[0].values.length;
+    need_(rows.every(function(p){return p.values.length===physicalWidth;}),'Lebar journal bercanggah.');
+    ensureGrid_(s, rows[rows.length - 1].row, physicalWidth);
     var i = 0;
 
     while (i < rows.length) {
@@ -217,7 +226,7 @@ function writePlan_(book, plan) {
         rows[i].row,
         1,
         vals.length,
-        SCHEMA_[name].length
+        physicalWidth
       ), vals);
 
       i = j;
@@ -245,7 +254,7 @@ function recover_(book) {
       return p[7];
     }).join(''), null);
     need_(Array.isArray(plan) && plan.every(function(p) {
-      return p && Object.prototype.hasOwnProperty.call(SCHEMA_, p.table) && Number.isInteger(p.row) && p.row >= 2 && Array.isArray(p.values) && p.values.length === SCHEMA_[p.table].length;
+      return p && Object.prototype.hasOwnProperty.call(SCHEMA_, p.table) && Number.isInteger(p.row) && p.row >= 2 && Array.isArray(p.values) && (p.values.length === SCHEMA_[p.table].length || p.table==='USERS'&&p.values.length===11);
     }), 'Pemulihan operasi diperlukan.');
     writePlan_(book, plan);
     s.getRange(start, 5).setValue('COMMITTED');
@@ -261,6 +270,8 @@ function locked_(fn) {
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(15000)) fail_('BUSY', 'Sistem sedang menyimpan. Cuba semula.');
   var acquired = Date.now();
+  var epochProps=PropertiesService.getScriptProperties(),finished=false;
+  epochProps.setProperty('READ_EPOCH',JSON.stringify({id:id_(),busy:true}));
   if (DIAG_) DIAG_.lock_wait_ms += acquired - waitStart;
   try {
     var b = database_();
@@ -273,8 +284,9 @@ function locked_(fn) {
       db = new Db_(b);
     }
     schoolApplyProfile_(db);
-    return fn(db);
+    var result=fn(db);finished=true;return result;
   } finally {
+    if(finished)epochProps.setProperty('READ_EPOCH',JSON.stringify({id:id_(),busy:false}));
     if (DIAG_) DIAG_.lock_hold_ms += Date.now() - acquired;
     lock.releaseLock();
   }
@@ -363,3 +375,16 @@ function audit_(db, u, req, action, table, entity, before, after, reason) {
     timestamp: now_()
   });
 }
+
+/* Optimistic read: reject any response overlapping a writer or journal recovery. */
+function consistentRead_(fn) {
+  CONFIG_REQUEST_=null;
+  var props=PropertiesService.getScriptProperties(),before=props.getProperty('READ_EPOCH'),marker=json_(before,{});
+  if(!marker.id||marker.busy)return locked_(fn);
+  var value,error;
+  try { var db=new Db_(database_());value=fn(db);need_(Object.keys(db.staged).length===0,'Bacaan tidak boleh menulis.'); } catch(e){error=e;}
+  if(props.getProperty('READ_EPOCH')!==before)return locked_(fn);
+  if(error)throw error;
+  return value;
+}
+function revision_(db,u){return {revision:hash_((PropertiesService.getScriptProperties().getProperty('READ_EPOCH')||'')+u.user_id+u.roles+u.auth_version)};}

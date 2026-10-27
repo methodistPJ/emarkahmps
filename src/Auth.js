@@ -6,7 +6,9 @@ function authSalt_(code, alias) {
   return hmac_('salt:' + String(code).trim().toUpperCase() + ':' + alias);
 }
 
-function authTarget_(p) {
+function authTarget_(p, db) {
+  if(db&&String(p.code||'').indexOf('@')>=0){var email=String(p.code).trim().toLowerCase();need_(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),'Masukkan emel yang sah.');var matches=db.read('USERS').filter(function(u){return bool_(u.active)&&String(u.email||'').toLowerCase()===email;});p.code=matches.length===1?matches[0].identification_code:'UNKNOWN_EMAIL';p.alias='';}
+
   p.code = String(p.code || '').trim().toUpperCase();
   need_(validLoginCode_(p.code), 'Masukkan kod guru yang diberikan pentadbir.');
   need_(/^[a-z0-9_-]{0,30}$/.test(p.alias || ''), 'Alias akaun tidak sah.');
@@ -23,16 +25,16 @@ function authRate_(db, target) {
 }
 
 function challenge_(db, p) {
-  var t = authTarget_(p);
+  var t = authTarget_(p, db);
   authRate_(db, t);
   return {
-    salt: authSalt_(p.code, p.alias || ''),
+    salt: (function(){var u=db.read('USERS').filter(function(r){return r.identification_code===p.code&&String(r.account_alias||'')===(p.alias||'');});return u.length===1?json_(u[0].authentication_data,{}).salt||authSalt_(p.code,p.alias||''):authSalt_(p.code,p.alias||'');})(),
     iterations: config_().iterations
   };
 }
 
 function login_(db, p) {
-  var target = authTarget_(p),
+  var target = authTarget_(p, db),
     rate = authRate_(db, target),
     global = db.state('global-login') || {
       n: 0,
@@ -64,12 +66,13 @@ function login_(db, p) {
     }, p, {
       ok: false
     });
-    fail_('AUTH', 'Pengenalan, alias atau PIN tidak sah.');
+    fail_('AUTH', 'Emel atau PIN tidak sah.');
   }
   db.setState('rate:' + target, {
     n: 0,
     until: 0
   });
+  if(db.state('email-pin-policy')&&(a.must_change||a.pin_policy!==6))return pinChangeTicket_(db,u,target);
   if(a.must_change)fail_('ONBOARDING_REQUIRED','Akaun baharu mesti diaktifkan dan menetapkan PIN individu dahulu.');
   var token = hmac_('session:' + id_() + ':' + id_() + ':' + Date.now()),
     digest = hash_(token),

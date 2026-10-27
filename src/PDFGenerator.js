@@ -152,7 +152,7 @@ async function pdfValidate_(blob, count) {
 function pdfRetry_(db, u, p, req) {
   admin_(u);
   var m = metadata_(db, p.exam_id, p.class_id);
-  need_(m && m.finalized_at && ['FAILED', 'QUEUED'].indexOf(m.pdf_status) >= 0,
+  need_(m && m.finalized_at && ['FAILED', 'QUEUED', 'AWAITING_ADMIN', 'OUTDATED'].indexOf(m.pdf_status) >= 0,
     'Tiada job gagal untuk dicuba semula.');
   m.pdf_status = 'QUEUED';
   m.job_lease = '';
@@ -168,6 +168,7 @@ function pdfRetry_(db, u, p, req) {
 }
 
 function pdfDownload_(db, u, p) {
+  admin_(u);
   readable_(db, u, p.exam_id, p.class_id);
   var m = metadata_(db, p.exam_id, p.class_id);
   need_(m && m.finalized_at && m.pdf_status === 'COMPLETED' && Number(m.pdf_revision) === Number(m

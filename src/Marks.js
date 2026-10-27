@@ -2,7 +2,7 @@ function dashboard_(db, u) {
   var exams = visibleExams_(db, u);
   var tasks = [];
   exams.forEach(function(e) {
-    var assignments = role_(u, 'ADMINISTRATOR') ? db.read('CLASSES').filter(function(c) {
+    var assignments = role_(u, 'ADMINISTRATOR') && !u.personal_view ? db.read('CLASSES').filter(function(c) {
       return String(c.academic_year) === String(e.academic_year) && bool_(c.active);
     }).map(function(c) {
       return {
@@ -167,3 +167,5 @@ function submit_(db, u, p, req) {
   audit_(db, u, req, 'SUBMIT', 'SUBMISSIONS', s.submission_id, before, s, 'TB disemak');
   return s;
 }
+
+function personalDashboard_(db,u){var personal=Object.assign({},u,{personal_view:true});return dashboard_(db,personal);}

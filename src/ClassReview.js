@@ -197,7 +197,7 @@ function finalize_(db, u, p, req) {
   m.class_finalization_revision = rev;
   m.finalized_at = now_();
   m.finalized_by = u.user_id;
-  m.pdf_status = 'QUEUED';
+  m.pdf_status = 'AWAITING_ADMIN';
   m.pdf_revision = rev;
   m.job_lease = '';
   m.job_owner = '';
@@ -217,7 +217,7 @@ function finalize_(db, u, p, req) {
   audit_(db, u, req, 'CLASS_FINALIZE', 'CLASS_REVIEWS', m.review_id, before, m, 'Seluruh kelas disahkan');
   return {
     revision: rev,
-    pdf_status: 'QUEUED'
+    pdf_status: 'AWAITING_ADMIN'
   };
 }
 

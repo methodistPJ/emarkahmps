@@ -12,6 +12,7 @@ let refreshes=0;M.view('test',async()=>refreshes++);await M.refreshView();assert
 M.pending.set('dirty',{});await M.refreshView();assert.equal(refreshes,1);M.pending.clear();
 focused=true;await M.refreshView();assert.equal(refreshes,1);focused=false;
 hidden=true;await M.refreshView();assert.equal(refreshes,1);hidden=false;
+await M.refreshView();assert.equal(refreshes,1);M.invalidateViews();
 let release;M.view('test',async()=>{refreshes++;await new Promise(r=>release=r);});const first=M.refreshView();await M.refreshView();assert.equal(refreshes,2);release();await first;
 const late=M.read('slow');M.invalidateViews();resolveRead({n:10});await assert.rejects(late,e=>e.code==='STALE_VIEW');
 M.stopRefresh();console.log('PASS score cap, isolated read-ahead cache, write invalidation, role switch, hidden/focused/dirty refresh guards and no overlapping refresh.');

@@ -482,7 +482,10 @@ test('Finalization blocks missing remarks/submissions, then freezes whole class'
     revisionHash: ready.revisionHash
   }, 'finalize'));
   const meta = context.metadata_(db(), 'UPSA', 'C4');
-  assert.equal(meta.pdf_status, 'QUEUED');
+  assert.equal(meta.pdf_status, 'AWAITING_ADMIN');
+  assert.throws(()=>context.pdfRetry_(db(),ct,{exam_id:'UPSA',class_id:'C4'},'no'),/pentadbir|admin/i);
+  mutate(d=>context.pdfRetry_(d,admin,{exam_id:'UPSA',class_id:'C4'},'admin-pdf'));
+  assert.equal(context.metadata_(db(),'UPSA','C4').pdf_status,'QUEUED');
   assert.equal(meta.class_finalization_revision, 1);
   const repeated=mutate(d=>context.finalize_(d, ct, {exam_id:'UPSA',class_id:'C4',confirmed:true,revisionHash:ready.revisionHash}, 'again'));
   assert.equal(repeated.revision,1);

@@ -22,6 +22,7 @@ function dashboard_(db, u) {
         class: c,
         gate: !a.subject_code ? classSubmissionGate_(db, e.exam_id, c.class_id) : null,
         submissions: !a.subject_code ? db.read('SUBMISSIONS').filter(function(s) { return s.exam_id === e.exam_id && s.class_id === c.class_id; }).map(function(s) { return {subject_code:s.subject_code, status:s.submission_status}; }) : [],
+        subject_name: a.subject_code ? (db.read('SUBJECTS').filter(function(s) { return s.subject_code === a.subject_code; })[0] || {}).subject_name || a.subject_code : '',
         assignment: a,
         stats: statistics_(marks.filter(function(r) { return !(r.mark_status === 'TB' && bool_(r.default_tb)); })),
         submission: a.subject_code ? submission_(db, e.exam_id, c.class_id, a.subject_code) :
@@ -48,6 +49,8 @@ function marksGet_(db, u, p) {
   readable_(db, u, p.exam_id, p.class_id, p.subject_code);
   var c = class_(db, p.class_id);
   return {
+    class: c,
+    exam: examView_(exam_(db, p.exam_id)),
     marks: p.subject_code ? entryMarks_(db, p.exam_id, p.class_id, p.subject_code) : db.marks(p.exam_id, p.class_id),
     rules: rules_(db, exam_(db, p.exam_id).grading_version),
     subjects: subjectsExam_(db, p.exam_id, c.year_level),

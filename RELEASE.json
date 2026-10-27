@@ -16,11 +16,11 @@
   },
   "rollback_warning": "Suspend all pending accounts before reverting to v1.0.2 auth.",
   "production_deployment_date": "2026-10-27",
-  "apps_script_version": 10,
-  "previous_apps_script_version": 9,
+  "apps_script_version": 11,
+  "previous_apps_script_version": 10,
   "live_verification": "Same production deployment URL. Credential/layout migration requires operator action. No marks reset.",
-  "ui_revision": "email-pin-personal-admin-welcome-v2",
+  "ui_revision": "clear-completion-refined-mark-entry-v3",
   "participation_revision": "optional-student-fields-v1",
-  "verification": "All core suites passed, including old/new email layout, restricted first-login tickets, PIN leading zeros, unchanged marks, admin-only PDF, optimistic-read race fallback and revision refresh guards. Synthetic browser checks cover email login, first-login PIN form, greeting, personal admin and account migration preview.",
+  "verification": "All core suites passed. Synthetic browser verified full subject name, bottom form actions, no bulk paste control and overflow 233 preserving previous 23. Marks remain unchanged.",
   "teacher_identifier_revision": "name-code-v1-legacy-six-digit-compatible"
 }

@@ -1,7 +1,7 @@
 /* In-memory, session-scoped read-ahead; writes and expiry invalidate every cached view. */
 (function(M){
   const cache=new Map(),pending=new Map();let generation=0,viewTimer=null,refreshBusy=false;
-  M.invalidateViews=()=>{generation++;cache.clear();pending.clear();};
+  M.invalidateViews=()=>{generation++;cache.clear();pending.clear();M.lastRevision=null;};
   const call=M.call;
   M.call=(action,payload={},write=false,id)=>{if(write)M.invalidateViews();return call(action,payload,write,id);};
   M.read=async(action,payload={},fresh=false)=>{
@@ -19,7 +19,7 @@
     M.stopRefresh();M.viewName=name;
     if(!refresh)return;
     const stamp=()=>{const n=document.querySelector('#view-updated');if(n)n.textContent='Dikemas kini '+M.date(new Date().toISOString());};
-    M.refreshView=async()=>{if(refreshBusy||document.hidden||!M.token||M.dirty()||document.querySelector('dialog[open]')||document.querySelector('#mps-loader:not([hidden])')||document.activeElement?.matches('input,textarea,select'))return;refreshBusy=true;try{await refresh();stamp();}catch(e){if(e.code==='SESSION')M.stopRefresh();}finally{refreshBusy=false;}};
+    M.refreshView=async()=>{if(refreshBusy||document.hidden||!M.token||M.dirty()||document.querySelector('dialog[open]')||document.querySelector('#mps-loader:not([hidden])')||document.activeElement?.matches('input,textarea,select'))return;refreshBusy=true;try{const version=await M.call('revision');if(M.lastRevision===version.revision)return;await refresh();M.lastRevision=version.revision;stamp();}catch(e){if(e.code==='SESSION')M.stopRefresh();}finally{refreshBusy=false;}};
     stamp();viewTimer=setInterval(()=>M.refreshView(),45000);
   };
   M.refreshBar=()=>'<div class="refresh-bar"><small id="view-updated">Data semasa</small><button type="button" id="view-refresh" class="secondary">Muat semula</button></div>';

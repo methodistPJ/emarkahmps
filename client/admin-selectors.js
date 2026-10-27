@@ -25,7 +25,7 @@
       code.minLength = 2;
       code.maxLength = 30;
       code.required = true;
-      form.elements.pin.minLength = 10;
+      form.elements.pin.minLength = 6;
       form.elements.pin.maxLength = 64;
     }
     ['full_name', 'class_name', 'subject_name', 'academic_year', 'year_level', 'opening_date', 'closing_date', 'grading_version', 'template_version'].forEach(name => {

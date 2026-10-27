@@ -11,6 +11,7 @@
     return btoa(String.fromCharCode(...raw)).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
   };
   M.installOnboarding = () => {
+    return;
     const box = document.querySelector('#activation-panel');
     if (!box || !window.google?.script?.run) return;
     box.innerHTML = '<details><summary>Guru baharu: Aktifkan Akaun</summary><p>PIN sementara BBB8307 sahaja tidak mencukupi. Dapatkan kod pengaktifan individu daripada pentadbir selepas identiti anda disahkan.</p><form id="activation-form"><label>Kod guru<input name="code" required pattern="([0-9]{6}|[A-Za-z][A-Za-z0-9_-]{1,29})" minlength="2" maxlength="30" autocapitalize="characters" spellcheck="false" autocomplete="username"></label><label>PIN sementara<input type="password" name="temporary_pin" minlength="7" maxlength="7" required autocomplete="off"></label><label>Kod pengaktifan individu<input name="activation_code" minlength="24" maxlength="24" required autocomplete="off"></label><button>Sahkan Pengaktifan</button></form><div id="activation-next"></div><p id="activation-status" role="status" aria-live="polite"></p></details>';

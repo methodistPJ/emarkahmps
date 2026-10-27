@@ -117,17 +117,18 @@
       M.pending = new Map(saved.pending);
       M.inflight = saved.inflight;
     }
+    const subjectName=data.subjects?.find(s=>s.subject_code===subject_code)?.subject_name||subject_code;
     const locked=!!data.metadata?.finalized_at||data.submission?.submission_status!=='DRAFT';
     const content = document.querySelector('#content');
     content.innerHTML =
-      `<p class="eyebrow">SMART MARKS ENTRY</p><h2>${M.esc(subject_code)} <em>/ Pengisian</em></h2><p class="save-status" id="save-status" role="status">${M.pending.size||M.inflight?'Perubahan tempatan dipulihkan. Tekan Cuba Simpan.':'Semua perubahan disimpan.'}</p><div id="conflict" class="conflict" hidden></div><div class="toolbar"><label>Cari murid<input id="mark-search" type="search"></label><label>Status<select id="mark-filter"><option value="">Semua</option><option value="EMPTY">Belum diisi</option><option value="TB">TB</option><option value="TH">TH</option><option value="SCORED">Markah angka</option></select></label><button id="retry-save" ${locked?'disabled':''}>${data.marks.some(m=>Number(m.record_version)>1)?'Kemaskini':'Simpan Markah'}</button><button id="submit-marks">${data.submission?.submission_status!=='DRAFT'?'Sahkan Semula':'Semak & Sahkan'}</button></div><p>${locked?'Subjek dikunci selepas penghantaran atau pemuktamadan.':'Masukkan 0–100, TB atau TH. Enter untuk murid seterusnya.'}</p><div class="table-scroll"><table><thead><tr><th>Bil.</th><th>Nama Murid</th><th>Markah / Status</th><th>Gred</th></tr></thead><tbody id="marks-body"></tbody></table></div><details><summary>Tampal markah secara kelompok</summary><p>Satu nilai setiap baris, mengikut susunan murid penuh. Semak bilangan sebelum menyimpan.</p><textarea id="paste-values" aria-label="Markah kelompok"></textarea><button id="apply-paste" ${locked?'disabled':''}>Semak & Terapkan</button></details><div id="submission-review"></div><p class="confirmed-banner" ${M.confirmation(data.verification)?'':'hidden'}>${M.confirmation(data.verification)}</p>${M.refreshBar()}`;
+      `<p class="eyebrow">SMART MARKS ENTRY</p><h2>${M.esc(subjectName)} <em>/ Pengisian</em></h2><p class="save-status" id="save-status" role="status">${M.pending.size||M.inflight?'Perubahan tempatan dipulihkan. Tekan Simpan Markah.':'Semua perubahan disimpan.'}</p><div id="conflict" class="conflict" hidden></div><div class="toolbar"><label>Cari murid<input id="mark-search" type="search"></label><label>Status<select id="mark-filter"><option value="">Semua</option><option value="EMPTY">Belum diisi</option><option value="TB">TB</option><option value="TH">TH</option><option value="SCORED">Markah angka</option></select></label></div><p>${locked?'Subjek dikunci selepas penghantaran atau pemuktamadan.':'Masukkan 0–100, TB atau TH. Enter atau tekan arrow down untuk murid seterusnya.'}</p><div class="table-scroll"><table><thead><tr><th>Bil.</th><th>Nama Murid</th><th>Markah / Status</th><th>Gred</th></tr></thead><tbody id="marks-body"></tbody></table></div><div class="mark-actions"><button id="retry-save" ${locked?'disabled':''}>${data.marks.some(m=>Number(m.record_version)>1)?'Kemaskini':'Simpan Markah'}</button><button id="submit-marks">${data.submission?.submission_status!=='DRAFT'?'Sahkan Semula':'Semak & Sahkan'}</button></div><div id="submission-review"></div><p class="confirmed-banner" ${M.confirmation(data.verification)?'':'hidden'}>${M.confirmation(data.verification)}</p>${M.refreshBar()}`;
     const render = () => {
       const search = document.querySelector('#mark-search').value.toLowerCase(),
         filter = document.querySelector('#mark-filter').value;
       document.querySelector('#marks-body').innerHTML = M.currentMarks.map((m, i) => {
         const value = M.rawDrafts.get(m.mark_id) ?? M.pending.get(m.mark_id)?.value ?? M.inflight?.payload.changes.find(c => c
           .mark_id === m.mark_id)?.value ?? M.display(m);
-        return `<tr ${m.student_name_snapshot.toLowerCase().includes(search)&&(!filter||m.mark_status===filter)?'':'hidden'}><td>${i+1}</td><td>${M.esc(m.student_name_snapshot)}</td><td><input class="mark-input" data-id="${M.esc(m.mark_id)}" aria-label="Markah ${M.esc(m.student_name_snapshot)}" inputmode="text" value="${M.esc(value)}" ${locked?'readonly':''}></td><td class="grade-preview">${M.esc(M.grade(value,data.rules))}</td></tr>`;
+        return `<tr ${m.student_name_snapshot.toLowerCase().includes(search)&&(!filter||m.mark_status===filter)?'':'hidden'}><td>${i+1}</td><td>${M.esc(m.student_name_snapshot)}</td><td><input class="mark-input" data-id="${M.esc(m.mark_id)}" aria-label="Markah ${M.esc(m.student_name_snapshot)}" inputmode="text" data-previous="${M.esc(value)}" value="${M.esc(value)}" ${locked?'readonly':''}></td><td class="grade-preview">${M.esc(M.grade(value,data.rules))}</td></tr>`;
       }).join('');
     };
     document.querySelector('#mark-search').value=previousSearch;document.querySelector('#mark-filter').value=previousFilter;
@@ -136,7 +137,7 @@
     document.querySelector('#mark-filter').onchange = render;
     document.querySelector('#marks-body').oninput = e => {
       if (!e.target.matches('.mark-input') || locked) return;
-      const limited=M.limitMark(e.target.value);if(limited!==e.target.value){e.target.value=limited;M.notice('Markah maksimum ialah 100.');}
+      const limited=M.limitMark(e.target.value,e.target.dataset.previous||'');if(limited!==e.target.value){e.target.value=limited;M.saveLabel('Nilai melebihi 100 tidak diterima. Nilai sebelumnya dikekalkan.');return;}e.target.dataset.previous=e.target.value;
       const m = M.currentMarks.find(x => x.mark_id === e.target.dataset.id),
         preview = M.grade(e.target.value, data.rules);
       e.target.closest('tr').querySelector('.grade-preview').textContent = preview;
@@ -162,19 +163,6 @@
       }
     };
     document.querySelector('#retry-save').onclick = () => M.feedback('Menyimpan markah…',async()=>{await M.flush();document.querySelector('#retry-save').textContent='Kemaskini';},'Markah berjaya disimpan');
-    document.querySelector('#apply-paste').onclick = () => M.run(async () => {
-      const values = document.querySelector('#paste-values').value.split(/\r?\n/).map(M.limitMark);
-      if (values.at(-1) === '') values.pop();
-      if (values.length !== M.currentMarks.length) throw new Error(
-        'Bilangan nilai mesti sama dengan bilangan murid.');
-      if (values.some(v => M.grade(v, data.rules) === 'Tidak sah')) throw new Error(
-        'Terdapat nilai tidak sah.');
-      if (!confirm(`Terapkan ${values.length} nilai mengikut susunan murid?`)) return;
-      M.invalid.clear();M.rawDrafts.clear();
-      M.currentMarks.forEach((m, i) => M.queue(m, values[i]));
-      render();
-      await M.flush();
-    });
     document.querySelector('#submit-marks').onclick = () => M.feedback('Menyemak markah…',async () => {
       if(M.activeCorruptKey())throw new Error('Pulihkan atau eksport draf rosak dahulu.');
     if (M.invalid.size) throw new Error('Betulkan nilai tidak sah dahulu.');
@@ -188,7 +176,7 @@
         };
       latest.marks.forEach(m => count[m.mark_status]++);
       document.querySelector('#submission-review').innerHTML =
-        `<section class="panel"><h3>Semakan Penghantaran</h3><p>${latest.marks.length} murid · Angka ${count.SCORED} · TH ${count.TH} · TB ${count.TB} · EMPTY ${count.EMPTY}</p><label ${count.TB ? '' : 'hidden'}><input type="checkbox" id="tb-ack"> Saya telah menyemak semua status TB${count.TB===latest.marks.length?' — SEMUA MURID TB':''}.</label><button id="confirm-submit" ${count.EMPTY?'disabled':''}>Sahkan Penghantaran ${M.esc(subject_code)}</button></section>`;
+        `<section class="panel"><h3>Semakan Penghantaran</h3><p>${latest.marks.length} murid · Angka ${count.SCORED} · TH ${count.TH} · TB ${count.TB} · EMPTY ${count.EMPTY}</p><label ${count.TB ? '' : 'hidden'}><input type="checkbox" id="tb-ack"> Saya telah menyemak semua status TB${count.TB===latest.marks.length?' — SEMUA MURID TB':''}.</label><button id="confirm-submit" ${count.EMPTY?'disabled':''}>Sahkan Penghantaran ${M.esc(subjectName)}</button></section>`;
       document.querySelector('#confirm-submit').onclick = () => M.feedback('Mengesahkan penghantaran…',async () => {
         const ack = document.querySelector('#tb-ack').checked;
         await M.call('submit', {

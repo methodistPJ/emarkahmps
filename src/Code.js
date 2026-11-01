@@ -36,7 +36,7 @@ function dispatch_(envelope) {
       var u = session_(db, envelope.token);
       if(a==='issueActivation')return issueActivation_(db,u,p,envelope.request_id);
       var reads = {
-        schoolReadiness:schoolReadiness_,schoolPreviewDetails:schoolPreviewDetails_,
+        acceptanceStatus:acceptanceStatus_,schoolReadiness:schoolReadiness_,schoolPreviewDetails:schoolPreviewDetails_,
         dashboard: dashboard_,
         personalDashboard:personalDashboard_,revision:revision_,accountsPlan:accountsPlan_,
         marksGet: marksGet_,
@@ -63,7 +63,7 @@ function dispatch_(envelope) {
       }
       if (Object.prototype.hasOwnProperty.call(reads, a)) return reads[a](db, u, p);
       var writes = {
-        schoolPreview:schoolPreview_,schoolCommit:schoolCommit_,schoolPrepare:schoolPrepare_,
+        acceptancePdfQueue:acceptancePdfQueue_,acceptanceStart:acceptanceStart_,resetTesting:resetTesting_,schoolPreview:schoolPreview_,schoolCommit:schoolCommit_,schoolPrepare:schoolPrepare_,
         teacherExamFocusSave: teacherExamFocusSave_,
         accountsUpgrade:accountsUpgrade_,resetPin:resetPin_,
         userSave: userSave_,

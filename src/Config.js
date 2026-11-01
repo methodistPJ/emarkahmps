@@ -72,6 +72,7 @@ function config_() {
     maxRemark: 300,
     iterations: 600000
   };
+  if (typeof QA_CONFIG_ !== 'undefined' && QA_CONFIG_) Object.assign(CONFIG_REQUEST_, QA_CONFIG_);
   return CONFIG_REQUEST_;
 }
 

@@ -13,5 +13,6 @@ assert.equal(c.masterFingerprint_(db()),before);
 for(const [i,m] of db().read('MARKS').entries()){assert.equal(m.mark_status,c.bool_(m.default_tb)?'TB':'EMPTY');assert.equal(m.score,'');assert.ok(Number(m.record_version)>versions[i]);}
 assert.ok(db().read('SUBMISSIONS').every(s=>s.submission_status==='DRAFT'&&!s.submitted_at));
 assert.ok(db().read('CLASS_REVIEWS').every(r=>!r.finalized_at&&!r.class_teacher_remark&&!r.result_snapshot&&r.pdf_status==='NONE'));
+assert.throws(()=>c.resetTesting_(db(),admin,{confirmed:'RESET DATA UJIAN'},'reset-again'));
 c.acceptanceStatus_=originalStatus;
 console.log('PASS reset requires admin and completed QA PDF, preserves all master data and credentials, increments versions, restores EMPTY/default TB, clears submissions, remarks, finalization and PDF state.');

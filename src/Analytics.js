@@ -18,7 +18,7 @@ function analytics_(db, u, p) {
     if (!classAccess && !assigned.length) return;
     var m = metadata_(db, e.exam_id, c.class_id),
       rows = p.mode === 'OFFICIAL' ? (m && m.finalized_at ? db.read('CLASS_REVIEWS').filter(function(r) {
-        return r.exam_id === e.exam_id && r.class_id === c.class_id && r.record_type === 'STUDENT';
+        return r.exam_id === e.exam_id && r.class_id === c.class_id && r.record_type === 'STUDENT' && !examExcluded_(db, e.exam_id, c.class_id, r.student_id);
       }).reduce(function(a, r) {
         return a.concat(json_(r.result_snapshot, {}).marks || []);
       }, []) : []) : db.marks(e.exam_id, c.class_id);
@@ -133,6 +133,8 @@ function teacherProgress_(db, e, classes, marks, p) {
     var teacher = users.find(function(u) { return u.user_id === a.user_id && bool_(u.active); });
     if (!teacher) return;
     var rows = marks.filter(function(m) {return m.class_id_snapshot === a.class_id && m.subject_code === a.subject_code && !(m.mark_status === 'TB' && bool_(m.default_tb));});
+    var block = db.state('block:' + key_([e.exam_id,a.class_id]));
+    if (block && block.excluded && !entryMarks_(db,e.exam_id,a.class_id,a.subject_code).length) return;
     var sub = submission_(db, e.exam_id, a.class_id, a.subject_code);
     var g = groups[a.user_id] || (groups[a.user_id] = {name: teacher.full_name, total: 0, completed: 0, submitted: 0, assignments: 0, details: []});
     var completed = rows.filter(function(r) {return r.mark_status !== 'EMPTY';}).length;

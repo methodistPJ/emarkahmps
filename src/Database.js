@@ -128,7 +128,7 @@ Db_.prototype.marks = function(exam, cls, sub) {
     }), 'Indeks kelas tidak sepadan. Tiada markah ditulis.');
   }
   return this.overlay('MARKS', this.blocks[cacheKey]).filter(function(r) {
-    return !sub || r.subject_code === sub;
+    return (!sub || r.subject_code === sub) && !(meta.excluded && Object.prototype.hasOwnProperty.call(meta.excluded, r.student_id));
   });
 };
 

@@ -1,6 +1,8 @@
 function classSubmissionGate_(db, e, c) {
   var cls = class_(db, c), subjects = subjectsExam_(db, e, cls.year_level);
   var missing = subjects.filter(function(sub) {
+    var block = db.state('block:' + key_([e,c]));
+    if (block && block.excluded && !entryMarks_(db, e, c, sub.subject_code).length) return false;
     var r = submission_(db, e, c, sub.subject_code);
     return !r || ['SUBMITTED', 'AMENDED'].indexOf(r.submission_status) < 0 || !bool_(r.tb_acknowledged);
   }).map(function(sub) { return sub.subject_code; });
@@ -21,9 +23,7 @@ function reviewGet_(db, u, p) {
   readable_(db, u, p.exam_id, p.class_id);
   var c = class_(db, p.class_id),
     rows = db.marks(p.exam_id, p.class_id),
-    reviews = db.read('CLASS_REVIEWS').filter(function(r) {
-      return r.exam_id === p.exam_id && r.class_id === p.class_id;
-    }),
+    reviews = examReviews_(db, p.exam_id, p.class_id),
     subjects = subjectsExam_(db, p.exam_id, c.year_level);
   return {
     class: c,
@@ -63,7 +63,7 @@ function remarkSave_(db, u, p, req) {
       return r.review_id === key_([p.exam_id, p.class_id, c.student_id]) && r.record_type ===
         'STUDENT';
     });
-    need_(r, 'Murid tidak dijumpai.');
+    need_(r && !examExcluded_(db, p.exam_id, p.class_id, c.student_id), 'Murid telah dikeluarkan daripada peperiksaan. Muat semula kelas.');
     if (Number(c.version) !== Number(r.record_version)) fail_('CONFLICT',
       'Ulasan berubah. Muat semula dan semak.', {
         student_id: c.student_id,
@@ -104,10 +104,10 @@ function readiness_(db, e, c) {
   var cls = class_(db, c),
     marks = db.marks(e, c),
     subs = subjectsExam_(db, e, cls.year_level),
-    reviews = db.read('CLASS_REVIEWS').filter(function(r) {
-      return r.exam_id === e && r.class_id === c && r.record_type === 'STUDENT';
-    }),
+    reviews = examReviews_(db, e, c).filter(function(r) {return r.record_type === 'STUDENT';}),
     missingSubs = subs.filter(function(s) {
+      var block = db.state('block:' + key_([e,c]));
+      if (block && block.excluded && !entryMarks_(db, e, c, s.subject_code).length) return false;
       var r = submission_(db, e, c, s.subject_code);
       return !r || ['SUBMITTED', 'AMENDED'].indexOf(r.submission_status) < 0 || !bool_(r.tb_acknowledged);
     }).map(function(s) {
@@ -162,9 +162,7 @@ function finalize_(db, u, p, req) {
     rules = rules_(db, ex.grading_version),
     subjects = subjectsExam_(db, p.exam_id, cls.year_level),
     rev = Number(m.class_finalization_revision || 0) + 1;
-  db.read('CLASS_REVIEWS').filter(function(r) {
-    return r.exam_id === p.exam_id && r.class_id === p.class_id && r.record_type === 'STUDENT';
-  }).forEach(function(r) {
+  examReviews_(db, p.exam_id, p.class_id).filter(function(r) {return r.record_type === 'STUDENT';}).forEach(function(r) {
     var studentMarks = marks.filter(function(x) {
       return x.student_id === r.student_id;
     }).map(function(x) {
@@ -210,7 +208,7 @@ function finalize_(db, u, p, req) {
     grading_version: ex.grading_version,
     template_version: ex.template_version,
     revisionHash: ready.revisionHash,
-    fingerprint: snapshotFingerprint_(db.read('CLASS_REVIEWS').filter(function(r){return r.record_type==='STUDENT'&&r.exam_id===p.exam_id&&r.class_id===p.class_id;}).map(function(r){return [r.student_id,r.result_snapshot];}))
+    fingerprint: snapshotFingerprint_(examReviews_(db,p.exam_id,p.class_id).filter(function(r){return r.record_type==='STUDENT';}).map(function(r){return [r.student_id,r.result_snapshot];}))
   });
   db.put('CLASS_REVIEWS', m);
   db.setState('class-verification:' + key_([p.exam_id, p.class_id]), {user_id: u.user_id, name: u.full_name, at: m.finalized_at});

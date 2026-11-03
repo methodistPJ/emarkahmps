@@ -28,7 +28,7 @@ window.MPS = window.MPS || {};
     const slow = setTimeout(() => M.notice('Permintaan mengambil masa lebih lama. Kekalkan tab; keputusan masih belum diketahui.', true), 12000);
     const timeout = setTimeout(() => finish(Object.assign(new Error('Masa menunggu tamat; server mungkin sudah menyimpan. Cuba semula dengan request yang sama.'), {
       code: 'TIMEOUT'
-    })), action==='acceptanceStart'?240000:action==='resetTesting'?120000:45000);
+    })), action==='slipPreview'?120000:action==='acceptanceStart'?240000:action==='resetTesting'?120000:45000);
 
     function finish(error, data) {
       if (settled) return;

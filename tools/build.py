@@ -2,7 +2,7 @@ from pathlib import Path
 root=Path(__file__).resolve().parent.parent
 client=root/'client'
 h=(client/'template.html').read_text().replace('__STYLES__',(client/'style.css').read_text())
-for name in ['reliability','admin-selectors','experience','email-pin']:
+for name in ['reliability','admin-selectors','exam-roster','experience','email-pin']:
     anchor='CHARTS' if name in ['reliability','experience','email-pin'] else 'ADMIN'
     h=h.replace('<script>__'+anchor+'__','<script>'+(client/(name+'.js')).read_text()+'</script><script>__'+anchor+'__')
 for name in ['zip-vendor','setup-contract','school-template','xlsx','onboarding','school-import']:
